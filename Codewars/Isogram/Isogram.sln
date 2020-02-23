@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29709.97
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Isogram", "Isogram.csproj", "{E51B124A-ECAD-43B6-8FD0-5EFCE8461CC0}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E51B124A-ECAD-43B6-8FD0-5EFCE8461CC0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E51B124A-ECAD-43B6-8FD0-5EFCE8461CC0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E51B124A-ECAD-43B6-8FD0-5EFCE8461CC0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E51B124A-ECAD-43B6-8FD0-5EFCE8461CC0}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {49758B3F-EB1A-4FDC-89C9-61F7A4D6DF19}
+	EndGlobalSection
+EndGlobal

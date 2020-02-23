@@ -1,0 +1,98 @@
+* {
+  Box-sizing: border-box;
+  }
+
+body {
+    margin: 0;
+  }
+
+header {
+  background: #222831;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  color:white;
+  font-family: Consolas;
+ }
+
+ /* header.name ----> <header class="name"> */
+ /* header .name ----> <header><div class="name"> */
+
+ header .name {
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 0 10%;
+}
+
+header > img {
+ 
+  padding: 40px 10%;
+}
+
+header h1 {
+  font-size: 80px;
+}
+
+header h2 {
+  font-size: 50px;
+}
+
+
+main {
+  display: flex;
+}
+
+/* LEFT PANEL */
+.left {
+  width: 800px;
+  background-color: grey;
+  text-align: right;
+  padding: 40px 70px;
+  min-height: 1300px;
+}
+
+/* RIGHT PANEL */
+.right {
+  right: 0;
+  background-color: white;
+  padding: 40px 70px 0px 70px;
+  min-height: 1300px;
+}
+
+/* FOOTER */
+.footer {
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width:100%;
+  height:100px;
+  background: #222831;
+}
+
+h1, h2, h3, p {
+  font-size: 25px;
+  font-family: Consolas;
+  line-height: 80%;
+  text-transform: uppercase;
+}
+
+.left h1 {
+  font-size: 40px;
+  font-weight: bold;
+  margin: 30px 0px 50px;
+}
+
+.right h1 {
+  font-size: 40px;
+  font-weight: bold;
+  margin: 30px 0px 50px;
+}
+
+.left h3 {
+  font-weight: normal;
+}
+
+
+
+

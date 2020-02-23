@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29709.97
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DuplicatedChars", "DuplicatedChars.csproj", "{916F8901-28D7-4ABB-9EF7-BD1E95DC2BB3}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{916F8901-28D7-4ABB-9EF7-BD1E95DC2BB3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{916F8901-28D7-4ABB-9EF7-BD1E95DC2BB3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{916F8901-28D7-4ABB-9EF7-BD1E95DC2BB3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{916F8901-28D7-4ABB-9EF7-BD1E95DC2BB3}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {5B9ED744-49FA-4F40-8B00-75D93D2B03D9}
+	EndGlobalSection
+EndGlobal
