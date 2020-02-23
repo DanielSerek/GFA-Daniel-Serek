@@ -28,7 +28,7 @@ namespace ComparableInterface
 
             foreach (var domino in dominoes)
             {
-                Console.WriteLine($"{domino.values[0]} : {domino.values[1]}");
+                domino.PrintAllFields(domino.values[0], domino.values[1]);
             }
 
             return dominoes;

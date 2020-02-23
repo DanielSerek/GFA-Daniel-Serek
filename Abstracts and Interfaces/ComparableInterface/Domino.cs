@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ComparableInterface
 {
-    public class Domino : IComparable<Domino>
+    public class Domino : IComparable<Domino>, IPrintable
     {
         public readonly int[] values;
 
@@ -25,6 +25,10 @@ namespace ComparableInterface
         {
             return values;
         }
-        
+
+        public void PrintAllFields(int a, int b)
+        {
+            Console.WriteLine($"{a} : {b}");
+        }
     }
 }
