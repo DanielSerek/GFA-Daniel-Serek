@@ -28,7 +28,7 @@ namespace ThePirateShip
             Ship FlyingDutchman = new Ship("Flying Dutchman", Davy);
             Davy.Ship = FlyingDutchman;
             Jack.Ship = BlackPearl;
-            Console.WriteLine(Jack.Ship.ShipName);       // Trochu komplikované
+            Console.WriteLine(Jack.Ship.ShipName);     
 
             
    
