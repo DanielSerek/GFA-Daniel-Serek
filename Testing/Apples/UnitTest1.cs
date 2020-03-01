@@ -74,8 +74,7 @@ namespace Apples
         public void TestSumNull()
         {
             Sum sum1 = new Sum();
-            List<int> numbers = null;
-            Assert.Equal(0, sum1.SumOfTheList(numbers));
+            Assert.Equal(0, sum1.SumOfTheList(null));
         }
     }
 }

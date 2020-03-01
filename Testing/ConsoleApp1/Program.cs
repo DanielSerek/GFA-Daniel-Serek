@@ -3,22 +3,29 @@ using System.Collections.Generic;
 
 namespace ConsoleApp1
 {
-    class Program
+    public class Program
     {
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
-            string str = "ssfarekjaasd";
-            Dictionary<string, int> counts = new Dictionary<string, int>();
-            for (int i = 0; i < str.Length; i++)
-            {
-                if (counts.ContainsKey(str[i].ToString()))
-                    counts[str[i].ToString()]++;
-                else
-                    counts.Add(str[i].ToString(), 1);
-            }
 
-            foreach (var count in counts)
-                Console.WriteLine($"{count.Key} = {count.Value}");
+            string hungarian = "bemutatkozik";
+            string teve = hungarian;
+            int length = teve.Length;
+            for (int i = 0; i < length; i++)
+            {
+                char c = teve[i];
+                if (IsVowel(c))
+                {
+                    teve = string.Join(c + "v" + c, teve);
+                    i += 2;
+                    length += 2;
+                }
+            }
+        }
+
+        public static bool IsVowel(char c)
+        {
+            return (new List<char>() { 'a', 'u', 'o', 'e', 'i' }).Contains(c);
         }
     }
 }

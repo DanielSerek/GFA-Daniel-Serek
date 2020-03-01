@@ -76,5 +76,17 @@ namespace Aircraft_Carrier
             if (CurrentAmmo == 0) return true;
             else return false;
         }
+
+        /// <summary>
+        /// Makes all aircrafts in the carrier free of ammo
+        /// </summary>
+        /// <param name="squadron"></param>
+        public void ClearSquadronAmmo(List<Aircraft> squadron)
+        {
+            for (int i = 0; i < squadron.Count; i++)
+            {
+                squadron[i].CurrentAmmo = 0;
+            }
+        }
     }
 }

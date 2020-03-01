@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Sharpie
 {
-    class Sharpie
+    public class Sharpie
     {
         public string Color;
         public float Width;

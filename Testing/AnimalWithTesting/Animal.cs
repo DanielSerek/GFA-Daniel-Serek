@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Animal
+namespace AnimalWithTesting
 {
     public class Animal
     {
@@ -18,7 +18,7 @@ namespace Animal
             Thirst = thirst;
         }
 
-        
+
         public void Eat()
         {
             Console.WriteLine($"{Name} eating...");
@@ -27,7 +27,7 @@ namespace Animal
 
         public void Drink()
         {
-            Console.WriteLine($"{Name} drinking..." );
+            Console.WriteLine($"{Name} drinking...");
             Thirst -= 1;
         }
 
@@ -42,10 +42,5 @@ namespace Animal
         {
             Console.WriteLine($"I am {Name}, my hunger is {Hunger} and my thirst is {Thirst}.");
         }
-
-
-
-
-
     }
 }

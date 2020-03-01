@@ -52,6 +52,8 @@ namespace Aircraft_Carrier
         /// <param name="enemy"></param>
         public string FightBetweenCarriers(Carrier enemy)
         {
+            Aircraft aircraft = new Aircraft();
+            
             // Checking whether player or enemy are alive
             if (this.HP <= 0) return "\nYou had already been destroyed!";
             else if (enemy.HP <= 0) return "\nYou can't kill dead ones!";
@@ -71,8 +73,8 @@ namespace Aircraft_Carrier
                 $"Your aircrafts caused {this.CalculateDamage()} and enemies aircrafts caused {enemy.CalculateDamage()} damage");
 
             // Clear all ammunition from the aircrafts
-            ClearSquadronAmmo(enemy.Aircrafts);
-            ClearSquadronAmmo(this.Aircrafts);
+            aircraft.ClearSquadronAmmo(enemy.Aircrafts);
+            aircraft.ClearSquadronAmmo(this.Aircrafts);
 
 
             // Checking whether you or enemy was destroyed
@@ -86,17 +88,7 @@ namespace Aircraft_Carrier
         }
 
 
-        /// <summary>
-        /// Makes all aircrafts in the carrier free of ammo
-        /// </summary>
-        /// <param name="squadron"></param>
-        public void ClearSquadronAmmo(List<Aircraft> squadron)
-        {
-            for (int i = 0; i < squadron.Count; i++)
-            {
-                squadron[i].CurrentAmmo = 0;
-            }
-        }
+        
 
 
         /// <summary>

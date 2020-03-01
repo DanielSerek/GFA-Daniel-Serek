@@ -1,15 +1,15 @@
 using System;
 using Xunit;
+using Animal;
 
-namespace Fibonacci
+namespace AnimalTest
 {
     public class UnitTest1
     {
         [Fact]
         public void Test1()
         {
-            Calculation calc = new Calculation();
-            Assert.Equal(8, calc.Calculate(6));
+            Animal cat = new Animal("Fiona", 33, 22);
         }
     }
 }
