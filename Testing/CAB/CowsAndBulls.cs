@@ -8,11 +8,15 @@ namespace CAB
     {
         public string Status;
         public int Guesses;
+        public int GuessedBulls;
+        public int GuessedCows;
         
         public CowsAndBulls()
         {
             Status = "Playing";
             Guesses = 0;
+            GuessedBulls = 0;
+            GuessedCows = 0;
         }
 
         /// <summary>
@@ -33,32 +37,40 @@ namespace CAB
             return randomNumberString;
         }
 
-
         /// <summary>
-        /// The method returns the user input number and checks that the number is in correct format
+        /// The method returns user input
         /// </summary>
         /// <returns></returns>
         public string UserInput()
         {
             Console.Write("Guess the number: ");
+            string guess = Console.ReadLine();
+            return guess;
+        }
+
+        /// <summary>
+        /// The method verifies whether the user input is in correct format
+        /// </summary>
+        /// <returns></returns>
+        public bool CheckUserInput(string guess)
+        {
+            if (guess.Length != 4) return false;
             try
             {
-                string guess = Console.ReadLine();
-                if (guess.Length != 4) return "X";
                 if (int.Parse(guess) >= 0 && int.Parse(guess) <= 9999)
                 {
-                    Guesses++;
-                    return guess;
+                    return true;
                 }
-                else return "X";
+                else return true;
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
-                return "X";
-            }
-        }
 
+                Console.WriteLine("The number was not in a correct format.");
+                return false;
+            }
+            
+        }
 
         /// <summary>
         /// The method returns string of cows and bulls guessed (bulls is the number of bulls deducted with the number of cows)
@@ -69,29 +81,28 @@ namespace CAB
         public string Guess(string numberToBeGuessed, string guess)
         {
             if (guess == "X") return "The input was wrong.";
-            int guessedBulls = 0;
-            int guessedCows  = 0;
+            
             for (int i = 0; i < 4; i++)
             {
                 for (int j = 0; j < 4; j++)
                 {
                     if (guess[i] == numberToBeGuessed[i])
                     {
-                        guessedCows++;
+                        GuessedCows++;
                         break;
                     }
                     else if (numberToBeGuessed[i] == guess[j])
                     {
-                        guessedBulls++;
+                        GuessedBulls++;
                         break;
                     }
                 }
             }
 
-            if (guessedCows == 4) Status = "Finished";
+            if (GuessedCows == 4) Status = "Finished";
             else Status = "Playing";
 
-            return $"You guessed {guessedCows} Cows and {guessedBulls} Bulls";
+            return $"You guessed {GuessedCows} Cows and {GuessedBulls} Bulls";
         }
     }
 }
