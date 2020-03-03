@@ -1,4 +1,3 @@
-# git-lesson-repository
-An example repository for the command line workshop in tools and basics module.
+DANIEL ŠEREK REPOSITORY
 
-For the problems see the workshop: https://github.com/greenfox-academy/teaching-materials/edit/master/workshop/command-line
+https://github.com/DanielSerek/GFA-Daniel-Serek/blob/master/TODOApplication/README.md
