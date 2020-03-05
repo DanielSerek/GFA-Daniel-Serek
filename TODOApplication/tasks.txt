@@ -1,0 +1,3 @@
+"\u003C \u003E Go for Belinka "
+"\u003CX\u003E Buy some food "
+"\u003C \u003E Make C# exercises "
