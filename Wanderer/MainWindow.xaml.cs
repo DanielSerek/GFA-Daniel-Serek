@@ -19,7 +19,7 @@ namespace Wanderer
             
             Drawer drawer = new Drawer(foxDraw);
             Map map = new Map(foxDraw, drawer);
-            map.DrawMap(10);
+            map.DrawMap(10, 50);
         }
 
         private void MainWindow_KeyUp(object sender, Avalonia.Input.KeyEventArgs e)
