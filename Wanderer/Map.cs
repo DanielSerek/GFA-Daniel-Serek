@@ -10,15 +10,21 @@ namespace Wanderer
 {
     public class Map
     {
+        private FoxDraw FoxDraw;
+        private Drawer Drawer;
         
-        public void DrawMap(int size, Canvas canvas)
+        public Map(FoxDraw foxDraw, Drawer drawer)
         {
-            var foxDraw = new FoxDraw(canvas);
+            FoxDraw = foxDraw;
+            Drawer = drawer;
+        }
+        public void DrawMap(int size) //, Canvas canvas
+        {
 
             // TODO: Put in a class tile using Enum
             IBitmap Floor = new Avalonia.Media.Imaging.Bitmap(@"../../../img/floor.png");
             IBitmap Wall = new Avalonia.Media.Imaging.Bitmap(@"../../../img/wall.png");
-
+                       
 
             // Generate the list of images objects
             List<List<Image>> images = new List<List<Image>>();
@@ -38,7 +44,10 @@ namespace Wanderer
             {
                 for (int j = 0; j < size; j++)
                 {
-                    foxDraw.AddImage(images[i][j], i * picSize, j * picSize);
+                    //FoxDraw.AddImage(images[i][j], i * picSize, j * picSize);
+                    Drawer.DrawCell(images, picSize, Floor, i, j);
+
+                    
                 }
             }
         }
