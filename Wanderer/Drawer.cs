@@ -14,6 +14,10 @@ namespace Wanderer
         //int CellSize;
         //int MapStartX;
         //int MapStartY;
+        // Is it a good place for IBitmap? Can I use Enum?
+        public IBitmap Floor = new Avalonia.Media.Imaging.Bitmap(@"../../../img/floor.png");
+        public IBitmap Wall = new Avalonia.Media.Imaging.Bitmap(@"../../../img/wall.png");
+        private IBitmap Character = new Avalonia.Media.Imaging.Bitmap(@"../../../img/hero-down.png");
 
         public Drawer(FoxDraw drawObj)
         {

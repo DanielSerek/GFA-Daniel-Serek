@@ -19,7 +19,10 @@ namespace Wanderer
             
             Drawer drawer = new Drawer(foxDraw);
             Map map = new Map(foxDraw, drawer);
-            map.DrawMap(10, 50);
+            map.DrawMap(10, 58);
+
+            Character player = new Player(0, 0, map, drawer);
+            player.Move(Character.Direction.South);
         }
 
         private void MainWindow_KeyUp(object sender, Avalonia.Input.KeyEventArgs e)

@@ -12,49 +12,46 @@ namespace Wanderer
     {
         private FoxDraw FoxDraw;
         private Drawer Drawer;
-        
+        //private Map Map;
+        public List<List<Image>> Images = new List<List<Image>>();
+        public List<List<int>> GameMap = new List<List<int>>();
+        public int PicSize = 72;
+
         public Map(FoxDraw foxDraw, Drawer drawer)
         {
             FoxDraw = foxDraw;
             Drawer = drawer;
+            //Map = map;
         }
         public void DrawMap(int size, int wallsPercentage) //, Canvas canvas
         {
-
-            // TODO: Where to put it? Use Enum?
-            IBitmap Floor = new Avalonia.Media.Imaging.Bitmap(@"../../../img/floor.png");
-            IBitmap Wall = new Avalonia.Media.Imaging.Bitmap(@"../../../img/wall.png");
-            IBitmap Skeleton = new Avalonia.Media.Imaging.Bitmap(@"../../../img/skeleton.png");
-                       
-
             // Generate the map of images objects
-            List<List<Image>> images = new List<List<Image>>();
             for (int i = 0; i < size; i++)
             {
-                images.Add(new List<Image>());
+                Images.Add(new List<Image>());
                 for (int j = 0; j < size; j++)
                 {
-                    images[i].Add(new Avalonia.Controls.Image());
-                    images[i][j].Source = Floor;
+                    Images[i].Add(new Avalonia.Controls.Image());
+                    Images[i][j].Source = Drawer.Floor;
                 }
             }
 
             // Generate the virtual gameMap: -1 = walkable field, 1 = wall ; -1 will be replaced by 0 in case of succesfull floodFill method
-            List<List<int>> gameMap = new List<List<int>>();
+        
             Random random = new Random();
             int floorCount = 0; //wallsCount variable is needed in floodFill method
             int randomNumber;
 
             for (int i = 0; i < size; i++)
             {
-                gameMap.Add(new List<int>());
+                GameMap.Add(new List<int>());
                 for (int j = 0; j < size; j++)
                 {
-                    gameMap[i].Add(-1);
+                    GameMap[i].Add(-1);
                     randomNumber = random.Next(0, 100);
                     if (randomNumber <= wallsPercentage)
                     {
-                        gameMap[i][j] = 1;
+                        GameMap[i][j] = 1;
                     }
                     else floorCount++;
                 }
@@ -63,32 +60,30 @@ namespace Wanderer
 
             do 
             {
-                floorCount = generateNewMap(gameMap, wallsPercentage);
+                floorCount = generateNewMap(GameMap, wallsPercentage);
                 //for (int i = 0; i < gameMap.Count; i++)
                 //{
                 int i = 0;    
-                for (int j = 0; j < gameMap.Count; j++)
+                for (int j = 0; j < GameMap.Count; j++)
                     {
-                        if (gameMap[i][j] == -1)
+                        if (GameMap[i][j] == -1)
                         {
-                            floodFill(gameMap, i, j);
+                            floodFill(GameMap, i, j);
                             break;
                         }
                     }
                 
                 //}
-            } while (checkFloodFill(gameMap) != floorCount);
+            } while (checkFloodFill(GameMap) != floorCount);
 
 
             // Print the map
-            int picSize = 72;
             for (int i = 0; i < size; i++)
             {
                 for (int j = 0; j < size; j++)
                 {
-                    if (gameMap[i][j] == 0) Drawer.DrawCell(images, picSize, Floor, i, j);
-                    else if (gameMap[i][j] == -1) Drawer.DrawCell(images, picSize, Skeleton, i, j);
-                    else Drawer.DrawCell(images, picSize, Wall, i, j);
+                    if (GameMap[i][j] == 0) Drawer.DrawCell(Images, PicSize, Drawer.Floor, i, j);
+                    else Drawer.DrawCell(Images, PicSize, Drawer.Wall, i, j);
                 }
             }
 
