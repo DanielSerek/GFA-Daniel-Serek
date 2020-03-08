@@ -3,6 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Markup.Xaml;
 
 namespace Wanderer
 {
@@ -39,8 +42,8 @@ namespace Wanderer
             if (dir == Direction.West   && ((Map.GameMap[PosX - 1][PosY] != 1))) PosX--;
             if (dir == Direction.East   && ((Map.GameMap[PosX + 1][PosY] != 1))) PosX++;
 
-            //Image player = new Image();
-            //Drawer.DrawCell(player, Map.PicSize, Image, PosX, PosY);
+            var player = new Avalonia.Controls.Image();
+            Drawer.DrawCell(player, Map.PicSize, Image, PosX, PosY);
         }
 
     }

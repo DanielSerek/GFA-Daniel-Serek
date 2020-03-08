@@ -27,10 +27,10 @@ namespace Wanderer
             //MapStartY = mapStartY;
         }
 
-        public void DrawCell(List<List<Image>> images, int picSize, IBitmap type, int x, int y) 
+        public void DrawCell(Image image, int picSize, IBitmap type, int x, int y) 
         {
-            images[x][y].Source = type;
-            DrawObj.AddImage(images[x][y], x * picSize, y * picSize);
+            image.Source = type;
+            DrawObj.AddImage(image, x * picSize, y * picSize);
         }
     }
 }

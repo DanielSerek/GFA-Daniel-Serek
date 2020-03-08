@@ -82,8 +82,8 @@ namespace Wanderer
             {
                 for (int j = 0; j < size; j++)
                 {
-                    if (GameMap[i][j] == 0) Drawer.DrawCell(Images, PicSize, Drawer.Floor, i, j);
-                    else Drawer.DrawCell(Images, PicSize, Drawer.Wall, i, j);
+                    if (GameMap[i][j] == 0) Drawer.DrawCell(Images[i][j], PicSize, Drawer.Floor, i, j);
+                    else Drawer.DrawCell(Images[i][j], PicSize, Drawer.Wall, i, j);
                 }
             }
 

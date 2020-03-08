@@ -21,8 +21,8 @@ namespace Wanderer
             Map map = new Map(foxDraw, drawer);
             map.DrawMap(10, 58);
 
-            //Character player = new Player(0, 0, map, drawer);
-            //player.Move(Character.Direction.South);
+            Character player = new Player(0, 0, map, drawer);
+            player.Move(Character.Direction.South);
         }
 
         private void MainWindow_KeyUp(object sender, Avalonia.Input.KeyEventArgs e)
