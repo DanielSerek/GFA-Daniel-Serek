@@ -39,8 +39,8 @@ namespace Wanderer
             if (dir == Direction.West   && ((Map.GameMap[PosX - 1][PosY] != 1))) PosX--;
             if (dir == Direction.East   && ((Map.GameMap[PosX + 1][PosY] != 1))) PosX++;
 
-            Image player = new Image();
-            Drawer.DrawCell(player, Map.PicSize, Image, PosX, PosY);
+            //Image player = new Image();
+            //Drawer.DrawCell(player, Map.PicSize, Image, PosX, PosY);
         }
 
     }
