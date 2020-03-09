@@ -10,20 +10,21 @@ namespace Wanderer
 {
     public class Map
     {
-        private FoxDraw FoxDraw;
         private Drawer Drawer;
-        //private Map Map;
+
         public List<List<Image>> Images = new List<List<Image>>();
         public List<List<int>> GameMap = new List<List<int>>();
-        public int PicSize = 72;
 
-        public Map(FoxDraw foxDraw, Drawer drawer)
+        public IBitmap Floor = new Avalonia.Media.Imaging.Bitmap(@"../../../img/floor.png");
+        public IBitmap Wall = new Avalonia.Media.Imaging.Bitmap(@"../../../img/wall.png");
+
+
+        public Map(Drawer drawer )
         {
-            FoxDraw = foxDraw;
             Drawer = drawer;
-            //Map = map;
         }
-        public void DrawMap(int size, int wallsPercentage) //, Canvas canvas
+
+        public void GenerateNewMap(int size, int wallsPercentage) 
         {
             // Generate the map of images objects
             for (int i = 0; i < size; i++)
@@ -32,12 +33,12 @@ namespace Wanderer
                 for (int j = 0; j < size; j++)
                 {
                     Images[i].Add(new Avalonia.Controls.Image());
-                    Images[i][j].Source = Drawer.Floor;
+                    Images[i][j].Source = Floor;
+                    Drawer.canvas.Children.Add(Images[i][j]);
                 }
             }
 
             // Generate the virtual gameMap: -1 = walkable field, 1 = wall ; -1 will be replaced by 0 in case of succesfull floodFill method
-        
             Random random = new Random();
             int floorCount = 0; //wallsCount variable is needed in floodFill method
             int randomNumber;
@@ -76,19 +77,20 @@ namespace Wanderer
                 //}
             } while (checkFloodFill(GameMap) != floorCount);
 
-
-            // Print the map
-            for (int i = 0; i < size; i++)
-            {
-                for (int j = 0; j < size; j++)
-                {
-                    if (GameMap[i][j] == 0) Drawer.DrawCell(Images[i][j], PicSize, Drawer.Floor, i, j);
-                    else Drawer.DrawCell(Images[i][j], PicSize, Drawer.Wall, i, j);
-                }
-            }
-
+                        
+            PrintMap();
         }
 
+        public void PrintMap()
+        {
+            for (int i = 0; i < GameMap[0].Count; i++)
+            {
+                for (int j = 0; j < GameMap[1].Count; j++) {
+                    if(GameMap[i][j] != 0) Images[i][j].Source = Wall;
+                    Drawer.Draw(Images[i][j], i, j);
+                }
+            }
+        }
 
         static int generateNewMap(List<List<int>> gameMap, int wallsPercentage)
         {
@@ -100,7 +102,7 @@ namespace Wanderer
             {
                 for (int j = 0; j < gameMap.Count; j++)
                 {
-                    randomNumber = random.Next(0, 100);
+                    randomNumber = random.Next(1, 100);
                     if (randomNumber <= wallsPercentage)
                     {
                         gameMap[i][j] = 1;

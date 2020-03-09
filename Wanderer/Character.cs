@@ -19,21 +19,35 @@ namespace Wanderer
             East
         }
 
-        public int PosX;
-        public int PosY;
-        //private FoxDraw FoxDraw;
+        public int PosX = 0;
+        public int PosY = 0;
         private Drawer Drawer;
         private Map Map;
-        private IBitmap Image = new Avalonia.Media.Imaging.Bitmap(@"../../../img/hero-down.png");
+        protected Avalonia.Controls.Image playerImage = null;
 
 
-        public Character(int posX, int posY, Map map, Drawer drawer)
+        public Character(int posX, int posY, Map map, Drawer drawer)            // , string imagePath
         {
             PosX = posX;
             PosY = posY;
             Map = map;
-            Drawer = drawer;
+            this.Drawer = drawer;
+
+            playerImage = new Avalonia.Controls.Image();
+            // SetImage(imagePath);
+            drawer.canvas.Children.Add(playerImage);
         }
+
+        // Sets Source to the image
+        protected void SetImage(string imagePath)
+        {
+            // Free the reference to the Bitmap
+            if (playerImage.Source != null) {
+                playerImage.Source.Dispose();
+            }
+            playerImage.Source = new Avalonia.Media.Imaging.Bitmap(imagePath);
+        }
+
 
         public virtual void Move(Direction dir)
         {
@@ -41,9 +55,11 @@ namespace Wanderer
             if (dir == Direction.South  && ((Map.GameMap[PosX][PosY + 1] != 1))) PosY++;
             if (dir == Direction.West   && ((Map.GameMap[PosX - 1][PosY] != 1))) PosX--;
             if (dir == Direction.East   && ((Map.GameMap[PosX + 1][PosY] != 1))) PosX++;
+        }
 
-            var player = new Avalonia.Controls.Image();
-            Drawer.DrawCell(player, Map.PicSize, Image, PosX, PosY);
+        public virtual void Draw()
+        {
+            Drawer.Draw(playerImage, PosX, PosY);
         }
 
     }

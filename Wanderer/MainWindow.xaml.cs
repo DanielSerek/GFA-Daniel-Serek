@@ -1,36 +1,54 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media.Imaging;
+using System;
 using System.Collections.Generic;
 
 namespace Wanderer
 {
     public class MainWindow : Window
     {
+        Character player = null;
+
         public MainWindow()
         {
             InitializeComponent();
             var canvas = this.Get<Canvas>("canvas");
-            var foxDraw = new FoxDraw(canvas);
+            Drawer drawer = new Drawer(canvas);
+            Map map = new Map(drawer);
+            map.GenerateNewMap(10, 40);  //58 is max
 
-            this.KeyUp += MainWindow_KeyUp;
+            this.KeyDown += MainWindow_KeyDown;
 
-            
-            Drawer drawer = new Drawer(foxDraw);
-            Map map = new Map(foxDraw, drawer);
-            map.DrawMap(10, 58);
 
-            Character player = new Player(0, 0, map, drawer);
-            player.Move(Character.Direction.South);
+            player = new Player(0, 0, map, drawer);
+            player.Draw();
         }
 
-        private void MainWindow_KeyUp(object sender, Avalonia.Input.KeyEventArgs e)
+        private void MainWindow_KeyDown(object sender, KeyEventArgs e)
         {
-            //Console.WriteLine(e.Key);
+
+            switch (e.Key) {
+                case Key.Left:
+                    player.Move(Character.Direction.West);
+                    break;
+                case Key.Right:
+                    player.Move(Character.Direction.East);
+                    break;
+                case Key.Up:
+                    player.Move(Character.Direction.North);
+                    break;
+                case Key.Down:
+                    player.Move(Character.Direction.South);
+                    break;
+            }
+
+           player.Draw();
         }
 
-        private void InitializeComponent()
+            private void InitializeComponent()
         {
             AvaloniaXamlLoader.Load(this);
         }

@@ -10,27 +10,23 @@ namespace Wanderer
 {
     public class Drawer
     {
-        FoxDraw DrawObj; //Actual drawing utility functions from syllabus
-        //int CellSize;
-        //int MapStartX;
-        //int MapStartY;
-        // Is it a good place for IBitmap? Can I use Enum?
-        public IBitmap Floor = new Avalonia.Media.Imaging.Bitmap(@"../../../img/floor.png");
-        public IBitmap Wall = new Avalonia.Media.Imaging.Bitmap(@"../../../img/wall.png");
-        private IBitmap Character = new Avalonia.Media.Imaging.Bitmap(@"../../../img/hero-down.png");
+        public int PicSize = 72;
 
-        public Drawer(FoxDraw drawObj)
+        // TODO: private???
+        internal Canvas canvas;
+
+        public Drawer( Canvas canvas )
         {
-            DrawObj = drawObj;
-            //CellSize = cellSize;
-            //MapStartX = mapStartX;
-            //MapStartY = mapStartY;
+            this.canvas = canvas;
         }
 
-        public void DrawCell(Image image, int picSize, IBitmap type, int x, int y) 
+        public void Draw(Image image, int xMap, int yMap)
         {
-            image.Source = type;
-            DrawObj.AddImage(image, x * picSize, y * picSize);
+            xMap *= PicSize;
+            yMap *= PicSize;
+
+            Canvas.SetLeft(image, xMap);
+            Canvas.SetTop(image, yMap);
         }
     }
 }
