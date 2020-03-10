@@ -62,24 +62,34 @@ namespace Wanderer
             do 
             {
                 floorCount = generateNewMap(GameMap, wallsPercentage);
-                //for (int i = 0; i < gameMap.Count; i++)
-                //{
-                int i = 0;    
-                for (int j = 0; j < GameMap.Count; j++)
-                    {
-                        if (GameMap[i][j] == -1)
-                        {
-                            floodFill(GameMap, i, j);
-                            break;
-                        }
-                    }
-                
-                //}
+                int i, j = 0;
+                if (FindFreeCell(out i,out j)) { floodFill(GameMap, i, j); }
+
             } while (checkFloodFill(GameMap) != floorCount);
 
                         
             PrintMap();
         }
+
+        public bool FindFreeCell(out int x, out int y)
+        {
+            for (int i = 0; i < GameMap[0].Count - 1; i++)
+            {
+                for (int j = 0; j < GameMap[1].Count; j++)
+                {
+                    if (GameMap[i][j] == -1)
+                    {
+                        x = i;
+                        y = j;
+                        return true;
+                    }
+                }
+            }
+            x = -1;
+            y = -1;
+            return false;
+        }
+
 
         public void PrintMap()
         {
@@ -117,6 +127,7 @@ namespace Wanderer
             }
             return floorCount;
         }
+        
 
 
         static int checkFloodFill(List<List<int>> gameMap)
