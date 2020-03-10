@@ -61,11 +61,11 @@ namespace Wanderer
 
             do 
             {
-                floorCount = generateNewMap(GameMap, wallsPercentage);
+                floorCount = GenerateNewMap(GameMap, wallsPercentage);
                 int i, j = 0;
-                if (FindFreeCell(out i,out j)) { floodFill(GameMap, i, j); }
+                if (FindFreeCell(out i,out j)) { FloodFill(GameMap, i, j); }
 
-            } while (checkFloodFill(GameMap) != floorCount);
+            } while (CheckFloodFill(GameMap) != floorCount);
 
                         
             PrintMap();
@@ -77,7 +77,7 @@ namespace Wanderer
             {
                 for (int j = 0; j < GameMap[1].Count; j++)
                 {
-                    if (GameMap[i][j] == -1)
+                    if (GameMap[i][j] == -1 || GameMap[i][j] == 0)
                     {
                         x = i;
                         y = j;
@@ -102,7 +102,7 @@ namespace Wanderer
             }
         }
 
-        static int generateNewMap(List<List<int>> gameMap, int wallsPercentage)
+        static int GenerateNewMap(List<List<int>> gameMap, int wallsPercentage)
         {
             Random random = new Random();
             int floorCount = 0; //wallsCount variable is needed in floodFill method
@@ -130,7 +130,7 @@ namespace Wanderer
         
 
 
-        static int checkFloodFill(List<List<int>> gameMap)
+        static int CheckFloodFill(List<List<int>> gameMap)
         {
             int count = 0;
             for (int i = 0; i < gameMap[0].Count; i++)
@@ -143,7 +143,7 @@ namespace Wanderer
             return count;
         }
         
-        static void floodFill(List<List<int>> gameMap, int x, int y)
+        static void FloodFill(List<List<int>> gameMap, int x, int y)
         {
             
             // Base cases 
@@ -157,10 +157,10 @@ namespace Wanderer
             gameMap[x][y] = 0;
 
             // Recur for north, east, south and west 
-            floodFill(gameMap, x + 1, y);
-            floodFill(gameMap, x - 1, y);
-            floodFill(gameMap, x, y + 1);
-            floodFill(gameMap, x, y - 1);
+            FloodFill(gameMap, x + 1, y);
+            FloodFill(gameMap, x - 1, y);
+            FloodFill(gameMap, x, y + 1);
+            FloodFill(gameMap, x, y - 1);
         }
     }
 }
