@@ -19,34 +19,9 @@ namespace Wanderer
             East
         }
 
-        int x, y = 0;
-
         public int PosX = 0;
-        //{
-        //    get
-        //    {
-        //        return x;
-        //    }
-        //    set
-        //    {
-        //        if (x < 0) x = 0;
-        //        else if (x > 9) x = 9;
-        //        else x = value;
-        //    }
-        //}
         public int PosY = 0;
-        //{
-        //    get
-        //    {
-        //        return y;
-        //    }
-        //    set
-        //    {
-        //        if (y < 0) y = 0;
-        //        else if (y > 9) y = 9;
-        //        else y = value;
-        //    }
-        //}
+
 
     private Drawer Drawer;
         private Map Map;

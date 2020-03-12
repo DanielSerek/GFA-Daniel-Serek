@@ -22,10 +22,9 @@ namespace Wanderer
 
             this.KeyDown += MainWindow_KeyDown;
 
-            int i, j = 0;
-            map.FindFreeCell(out i, out j);
-
-            player = new Player(i, j, map, drawer);
+            int x, y = 0;
+            map.FindFreeCell(out x, out y);
+            player = new Player(x, y, map, drawer);
             player.Draw();
         }
 
