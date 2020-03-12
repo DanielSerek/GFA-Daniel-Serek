@@ -20,12 +20,13 @@ namespace Wanderer
             Map map = new Map(drawer);
             map.GenerateNewMap(10, 40);  //58 is max
 
-            this.KeyDown += MainWindow_KeyDown;
-
-            int x, y = 0;
-            map.FindFreeCell(out x, out y);
-            player = new Player(x, y, map, drawer);
+            int x = 0;
+            int y = 0;
+            map.FindFreeCell(out x, out y); 
+            player = new Player(10, 10, map, drawer); // NEFUNGUJE, PROČ???
             player.Draw();
+
+            this.KeyDown += MainWindow_KeyDown;
         }
 
         private void MainWindow_KeyDown(object sender, KeyEventArgs e)
@@ -49,7 +50,7 @@ namespace Wanderer
            player.Draw();
         }
 
-            private void InitializeComponent()
+        private void InitializeComponent()
         {
             AvaloniaXamlLoader.Load(this);
         }

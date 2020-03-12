@@ -19,8 +19,8 @@ namespace Wanderer
             East
         }
 
-        public int PosX = 0;
-        public int PosY = 0;
+        public int PosX;
+        public int PosY;
 
 
     private Drawer Drawer;

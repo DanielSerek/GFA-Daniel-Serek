@@ -71,7 +71,7 @@ namespace Wanderer
             {
                 floorCount = generateNewMap(GameMap, wallsPercentage);
                 int i, j = 0;
-                if (FindFreeCell(out i,out j)) { floodFill(GameMap, i, j); }
+                if (FindFreeCell(out i, out j)) { floodFill(GameMap, i, j); }
 
             } while (checkFloodFill(GameMap) != floorCount);
 
@@ -79,13 +79,22 @@ namespace Wanderer
             PrintMap();
         }
 
+        // Resolves boundary conditions and returns a type of a tile
+        public TileType GetTile(int x, int y)
+        {
+            if (x <= 0 || x >= GameMap[0].Count - 1) return TileType.Wall;
+            if (y <= 0 || y >= GameMap[1].Count - 1) return TileType.Wall;
+            return GameMap[x][y];
+        }
+
+
         public bool FindFreeCell(out int x, out int y)
         {
             for (int i = 0; i < GameMap[0].Count - 1; i++)
             {
                 for (int j = 0; j < GameMap[1].Count; j++)
                 {
-                    if (GameMap[i][j] == TileType.Floor)
+                    if (GameMap[i][j] == TileType.Floor || GameMap[i][j] == TileType.Flooded)
                     {
                         x = i;
                         y = j;
