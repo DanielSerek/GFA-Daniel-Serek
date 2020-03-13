@@ -15,18 +15,19 @@ namespace Wanderer
         public MainWindow()
         {
             InitializeComponent();
+            this.KeyDown += MainWindow_KeyDown;
+
             var canvas = this.Get<Canvas>("canvas");
             Drawer drawer = new Drawer(canvas);
             Map map = new Map(drawer);
-            map.GenerateNewMap(10, 40);  //58 is max
+            map.GenerateMap(10, 58);  //58 is max
 
             int x = 0;
             int y = 0;
             map.FindFreeCell(out x, out y); 
-            player = new Player(10, 10, map, drawer); // NEFUNGUJE, PROČ???
+            player = new Player(x, y, map, drawer); // NEFUNGUJE, PROČ???
             player.Draw();
 
-            this.KeyDown += MainWindow_KeyDown;
         }
 
         private void MainWindow_KeyDown(object sender, KeyEventArgs e)
