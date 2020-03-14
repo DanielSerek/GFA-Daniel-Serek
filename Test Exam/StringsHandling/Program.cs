@@ -39,8 +39,10 @@ namespace StringsHandling
                             }
                         } while (!reader.EndOfStream);
 
+                        // The dictionary list is sorted according to the array lengths of individual lines
                         foreach (KeyValuePair<int, string[]> orderedLine in lines.OrderBy(key => key.Value.Length))
                         {
+                            // Writing lines from Dictionary to the file
                             for (int i = 0; i < orderedLine.Value.Length; i++)
                             {
                                 writer.Write(orderedLine.Value[i] + " ");
