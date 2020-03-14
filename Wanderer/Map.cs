@@ -84,7 +84,6 @@ namespace Wanderer
             return GameMap[x, y];
         }
 
-
         public bool FindFreeCell(out int x, out int y)
         {
             for (int i = 0; i < GameMap.GetLength(0); i++) {
