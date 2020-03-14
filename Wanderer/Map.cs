@@ -19,11 +19,11 @@ namespace Wanderer
         }
 
         private Drawer Drawer;
-        public Image[,] Images = null;
+        //public Image[,] Images = null;
         public TileType[,] GameMap = null; 
 
-        public IBitmap FLOOR = new Avalonia.Media.Imaging.Bitmap(@"../../../img/floor.png");
-        public IBitmap WALL = new Avalonia.Media.Imaging.Bitmap(@"../../../img/wall.png");
+        //public IBitmap FLOOR = new Avalonia.Media.Imaging.Bitmap(@"../../../img/floor.png");
+        //public IBitmap WALL = new Avalonia.Media.Imaging.Bitmap(@"../../../img/wall.png");
 
 
         public Map(Drawer drawer)
@@ -34,13 +34,11 @@ namespace Wanderer
         public void GenerateMap(int size, int wallsPercentage)
         {
             //Image test = new Avalonia.Controls.Image();
-            Images = new Avalonia.Controls.Image[size, size];
+            //Images = new Avalonia.Controls.Image[size, size];
             // Generate the map of images objects
             for (int i = 0; i < size; i++) {
                 for (int j = 0; j < size; j++) {
-                    Images[i, j] = new Avalonia.Controls.Image();
-                    Images[i, j].Source = FLOOR;
-                    Drawer.canvas.Children.Add(Images[i, j]);
+                    Drawer.DrawImage(Drawer.ImgType.Floor, i, j);
                 }
             }
 
@@ -109,8 +107,8 @@ namespace Wanderer
         {
             for (int i = 0; i < GameMap.GetLength(0); i++) {
                 for (int j = 0; j < GameMap.GetLength(1); j++) {
-                    if (GameMap[i, j] == TileType.Wall) Images[i, j].Source = WALL;
-                    Drawer.Draw(Images[i, j], i, j);
+                    if (GameMap[i, j] == TileType.Wall) Drawer.DrawImage(Drawer.ImgType.Wall, i, j);
+                    else Drawer.DrawImage(Drawer.ImgType.Floor, i, j);
                 }
             }
         }

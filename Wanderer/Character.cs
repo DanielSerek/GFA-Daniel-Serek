@@ -58,17 +58,12 @@ namespace Wanderer
             if (dir == Direction.South && Map.GetTile(PosX, PosY + 1) == Map.TileType.Floor) PosY++;
             if (dir == Direction.West && Map.GetTile(PosX - 1, PosY) == Map.TileType.Floor) PosX--;
             if (dir == Direction.East && Map.GetTile(PosX + 1, PosY) == Map.TileType.Floor) PosX++;
-
-            //if (dir == Direction.North && (PosY != 0) && (Map.GameMap[PosX][PosY - 1] != 1)) PosY--;
-            //if (dir == Direction.South && (PosY != Map.GameMap[1].Count - 1) && (Map.GameMap[PosX][PosY + 1] != 1)) PosY++;
-            //if (dir == Direction.West && (PosX != 0) && (Map.GameMap[PosX - 1][PosY] != 1)) PosX--;
-            //if (dir == Direction.East && (PosX != Map.GameMap[1].Count - 1) && (Map.GameMap[PosX + 1][PosY] != 1)) PosX++;
         }
 
 
-        public virtual void Draw()
-        {
-            Drawer.Draw(playerImage, PosX, PosY);
-        }
+        //public virtual void Draw()
+        //{
+        //    Drawer.Draw(playerImage, PosX, PosY);
+        //}
     }
 }
