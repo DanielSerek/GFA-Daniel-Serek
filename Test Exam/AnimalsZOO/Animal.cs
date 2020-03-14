@@ -26,12 +26,12 @@ namespace AnimalsZOO
 
         public void Eat(int food)
         {
-            if (food + this.CurrentFeed > this.MaxFeed)
-                Console.WriteLine($"You can't feed the animal so much! The maximum feed can be {this.MaxFeed - this.CurrentFeed}");
+            if (food + CurrentFeed > MaxFeed)
+                throw new Exception($"You can't feed the animal so much! The maximum feed can be {this.MaxFeed - this.CurrentFeed}");
             else
             {
-                this.CurrentFeed += food;
-                this.ConsumedFood += food;
+                CurrentFeed += food;
+                ConsumedFood += food;
             }
         }
 
@@ -49,8 +49,8 @@ namespace AnimalsZOO
         
         public string GetStatus()
         {
-            return $"The animal name is {this.Name}, it's hunger level is " +
-                $"{this.GetHunger()} and it is {((this.Herbivore) ? "herbivore" : "carnivore")}";
+            return $"The animal name is {Name}, it's hunger level is " +
+                $"{GetHunger()} and it is {((Herbivore) ? "herbivore" : "carnivore")}";
         }
     }
 }
