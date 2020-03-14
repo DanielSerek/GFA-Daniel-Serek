@@ -28,13 +28,13 @@ namespace AnimalsZOO
         {
             foreach (var animal in Animals)
             {
-                if(animal.Herbivore && Vegetables > 0)
+                if (animal.IsHerbivore() && Vegetables > 0)
                 {
                     if (Vegetables < animal.GetHunger()) animal.CurrentFeed += Vegetables;
                     else animal.CurrentFeed += animal.GetHunger();
                 }
-                
-                if (!animal.Herbivore && Meat > 0)
+
+                if (!animal.IsHerbivore() && Meat > 0)
                 {
                     if (Meat < animal.GetHunger()) animal.CurrentFeed += Meat;
                     else animal.CurrentFeed += animal.GetHunger();
@@ -48,18 +48,61 @@ namespace AnimalsZOO
             Vegetables += vegetables;
         }
 
-        /*It should have a SpendNormalDay method that calls the Live and Run methods of each animals and aggregates all the consumed foods as shit into the shit levels
-It should have a SpendQuarantineDay method that does the same as SpendNormalDay just only calls the Live  method
-It should have a GetTheFullestStatus method that returns the status of the animal that is the least hungry, it should take a filterHerbivore parameter and if that is true it should only search between the carnivores*/
-        
+
         public void SpendNormalDay()
         {
             foreach (var animal in Animals)
             {
-                animal.Live();
-                animal.Run();
+                Shit += animal.Live();
+                Shit += animal.Run();
             }
         }
 
+        public void SpendQuarantineDay()
+        {
+            foreach (var animal in Animals)
+            {
+                Shit += animal.Live();
+            }
+        }
+
+        public string GetFullestStatus(bool filterHerbivore)
+        {
+            int index = 0;
+            // I need to fill the first value into difference variable
+            int j = 0;
+            int difference = 0;
+            do
+            {
+                if (Animals[j].Herbivore == filterHerbivore)
+                {
+                    difference = Animals[j].GetHunger();
+                    break;
+                }
+                if (Animals[j].Herbivore != filterHerbivore)
+                {
+                    difference = Animals[j].GetHunger();
+                    break;
+                }
+                j++;
+            } while (j < Animals.Count);
+
+
+
+            for (int i = 0; i < Animals.Count; i++)
+            {
+                if (Animals[i].GetHunger() < difference && Animals[i].Herbivore == filterHerbivore)
+                {
+                    difference = Animals[i].GetHunger();
+                    index = i;
+                }
+                else if(Animals[i].GetHunger() < difference && Animals[i].Herbivore != filterHerbivore) 
+                {
+                    difference = Animals[i].GetHunger();
+                    index = i;
+                }
+            }
+            return Animals[index].GetStatus();
+        }
     }
 }

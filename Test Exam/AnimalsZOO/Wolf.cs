@@ -6,7 +6,7 @@ namespace AnimalsZOO
 {
     public class Wolf : Animal
     {
-        public Wolf(string name, int currentFeed) : base(name, currentFeed)
+        public Wolf(string name) : base(name)
         {
             Herbivore = false;
             MaxFeed = 5;
