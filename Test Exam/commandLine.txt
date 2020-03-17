@@ -1,0 +1,3 @@
+rm program/data.txt
+rm exam/data.txt
+mv program/assets/picture* exam/images/
