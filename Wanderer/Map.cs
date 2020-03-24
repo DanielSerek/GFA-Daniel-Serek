@@ -19,38 +19,27 @@ namespace Wanderer
         }
 
         private Drawer Drawer;
-        //public Image[,] Images = null;
-        public TileType[,] GameMap = null; 
+        public TileType[,] GameMap = null;
+        private int mapSize;
 
-        //public IBitmap FLOOR = new Avalonia.Media.Imaging.Bitmap(@"../../../img/floor.png");
-        //public IBitmap WALL = new Avalonia.Media.Imaging.Bitmap(@"../../../img/wall.png");
-
-
-        public Map(Drawer drawer)
+        public Map(Drawer drawer, int mapSize)
         {
             Drawer = drawer;
+            this.mapSize = mapSize;
         }
 
-        public void GenerateMap(int size, int wallsPercentage)
+        // The initial function call to generate first map and check if it passess Floodfill method
+        public void GenerateMap(int wallsPercentage)
         {
-            //Image test = new Avalonia.Controls.Image();
-            //Images = new Avalonia.Controls.Image[size, size];
-            // Generate the map of images objects
-            for (int i = 0; i < size; i++) {
-                for (int j = 0; j < size; j++) {
-                    Drawer.DrawImage(Drawer.ImgType.Floor, i, j);
-                }
-            }
-
             // Generate the virtual gameMap
             Random random = new Random();
             int floorCount = 0; //wallsCount variable is needed in floodFill method
             int randomNumber;
             
-            GameMap = new TileType[size, size];
+            GameMap = new TileType[mapSize, mapSize];
 
-            for (int i = 0; i < size; i++) {
-                for (int j = 0; j < size; j++) {
+            for (int i = 0; i < mapSize; i++) {
+                for (int j = 0; j < mapSize; j++) {
                     randomNumber = random.Next(0, 100);
                     if (randomNumber <= wallsPercentage) {
                         GameMap[i, j] = TileType.Wall;
@@ -106,12 +95,13 @@ namespace Wanderer
         {
             for (int i = 0; i < GameMap.GetLength(0); i++) {
                 for (int j = 0; j < GameMap.GetLength(1); j++) {
-                    if (GameMap[i, j] == TileType.Wall) Drawer.DrawImage(Drawer.ImgType.Wall, i, j);
-                    else Drawer.DrawImage(Drawer.ImgType.Floor, i, j);
+                    if (GameMap[i, j] == TileType.Wall) Drawer.DrawImage(i.ToString()+j.ToString(), Drawer.ImgType.Wall, i, j);
+                    else Drawer.DrawImage(i.ToString()+j.ToString(), Drawer.ImgType.Floor, i, j);
                 }
             }
         }
 
+        // If the first map doesn't pass floodfill, a new map is generated using this method
         int GenerateNewMap(int wallsPercentage)
         {
             Random random = new Random();
@@ -133,6 +123,7 @@ namespace Wanderer
             return floorCount;
         }
 
+        // Change of flooded tiles back to floor tiles
         void PrepareMap()
         {
             for (int i = 0; i < GameMap.GetLength(0); i++) {
@@ -145,6 +136,7 @@ namespace Wanderer
         }
 
 
+        // Count how many tiles have been flooded
         int CheckFloodFill()
         {
             int count = 0;
@@ -152,7 +144,6 @@ namespace Wanderer
                 for (int j = 0; j < GameMap.GetLength(1); j++) {
                     if (GameMap[i, j] == TileType.Flooded) {
                         count++;
-                        //GameMap[i,j] = TileType.Floor;
                     }
                 }
             }
@@ -161,13 +152,11 @@ namespace Wanderer
 
         void FloodFill(int x, int y)
         {
-
             // Base cases 
             if (x < 0 || x >= GameMap.GetLength(0) ||
                 y < 0 || y >= GameMap.GetLength(1))
                 return;
             if (GameMap[x, y] == TileType.Flooded || GameMap[x, y] == TileType.Wall)
-                //if (gameMap[x,y] != TileType.Flooded)
                 return;
 
             // Replace the color at (x, y) 
@@ -178,7 +167,17 @@ namespace Wanderer
             FloodFill(x - 1, y);
             FloodFill(x, y + 1);
             FloodFill(x, y - 1);
+        }
 
+        //Generate a random cell and create a skeleton
+        public void RandomCell(out int i, out int j)
+        {
+            Random random = new Random();
+            do
+            {
+                i = random.Next(1, mapSize);
+                j = random.Next(1, mapSize);
+            } while (GetTile(i, j) != Map.TileType.Floor);
         }
     }
 }

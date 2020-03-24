@@ -14,7 +14,12 @@ namespace Wanderer
         {
             Floor,
             Wall,
-            HeroDown
+            HeroDown,
+            HeroUp,
+            HeroLeft,
+            HeroRight,
+            Skeleton,
+            Boss
         }
 
         internal Canvas canvas;
@@ -23,6 +28,7 @@ namespace Wanderer
         private int Top;
         private Dictionary<ImgType, Bitmap> Resources;
         private static string ImagePath = @"../../../img/";
+        public Dictionary<string, Image> Images; // Dictionary is used to call different Image objects
 
         public Drawer(Canvas canvas, int picsize, int left, int top)
         {
@@ -31,6 +37,7 @@ namespace Wanderer
             Left = left;
             Top = top;
             Resources = new Dictionary<ImgType, Bitmap>();
+            Images = new Dictionary<string, Image>();
 
             Load();
         }
@@ -40,26 +47,46 @@ namespace Wanderer
             Resources.Add(ImgType.Floor, new Avalonia.Media.Imaging.Bitmap(ImagePath + "floor.png"));
             Resources.Add(ImgType.Wall, new Avalonia.Media.Imaging.Bitmap(ImagePath + "wall.png"));
             Resources.Add(ImgType.HeroDown, new Avalonia.Media.Imaging.Bitmap(ImagePath + "hero-down.png"));
+            Resources.Add(ImgType.HeroUp, new Avalonia.Media.Imaging.Bitmap(ImagePath + "hero-up.png"));
+            Resources.Add(ImgType.HeroLeft, new Avalonia.Media.Imaging.Bitmap(ImagePath + "hero-left.png"));
+            Resources.Add(ImgType.HeroRight, new Avalonia.Media.Imaging.Bitmap(ImagePath + "hero-right.png"));
+            Resources.Add(ImgType.Skeleton, new Avalonia.Media.Imaging.Bitmap(ImagePath + "skeleton.png"));
+            Resources.Add(ImgType.Boss, new Avalonia.Media.Imaging.Bitmap(ImagePath + "boss.png"));
+            
         }
 
-        public void DrawImage(ImgType type, int xMap, int yMap)
+        public void DrawImage(string imageName, ImgType type, int xMap, int yMap)
         {
             Image image = new Avalonia.Controls.Image();
+            Images.Add(imageName, image);
             image.Source = Resources[type];
             Canvas.SetLeft(image, Left + xMap * PicSize);
             Canvas.SetTop(image, Top + yMap * PicSize);
             canvas.Children.Add(image);
-
-            //xMap *= PicSize;
-            //yMap *= PicSize;
-
-            //Canvas.SetLeft(image, xMap);
-            //Canvas.SetTop(image, yMap);
         }
 
-        public void ClearCanvas()
+        public void DrawImage( Character ch, ImgType type)
         {
-            canvas.Children.Clear();
+            Image image = new Avalonia.Controls.Image();
+            Images.Add( ch.Id, image);
+            image.Source = Resources[type];
+            Canvas.SetLeft(image, Left + ch.PosX * PicSize);
+            Canvas.SetTop(image, Top + ch.PosY * PicSize);
+            canvas.Children.Add(image);
         }
+
+        public void MoveImage( Character ch, ImgType type)
+        {
+            Image image = Images[ch.Id];
+
+            image.Source = Resources[type];
+            Canvas.SetLeft(image, Left + ch.PosX * PicSize);
+            Canvas.SetTop(image, Top + ch.PosY * PicSize);
+        }
+
+        //public void ClearCanvas()
+        //{
+        //    canvas.Children.Clear();
+        //}
     }
 }

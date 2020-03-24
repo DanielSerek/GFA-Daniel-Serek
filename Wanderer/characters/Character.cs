@@ -21,36 +21,22 @@ namespace Wanderer
 
         public int PosX;
         public int PosY;
+        public Direction Dir;
 
+        public string Id { get; private set; }
 
-    private Drawer Drawer;
+        protected Drawer Drawer;
         private Map Map;
-        protected Avalonia.Controls.Image playerImage = null;
 
 
-        public Character(int posX, int posY, Map map, Drawer drawer)            // , string imagePath
+        public Character(int posX, int posY, Map map, Drawer drawer, string id )            // , string imagePath
         {
+            Id = id;
             PosX = posX;
             PosY = posY;
             Map = map;
             this.Drawer = drawer;
-
-            playerImage = new Avalonia.Controls.Image();
-            // SetImage(imagePath);
-            drawer.canvas.Children.Add(playerImage);
         }
-
-        // Sets Source to the image
-        protected void SetImage(string imagePath )
-        {
-            // Free the reference to the Bitmap
-            if (playerImage.Source != null) {
-                playerImage.Source.Dispose();
-            }
-
-            playerImage.Source = new Avalonia.Media.Imaging.Bitmap(imagePath);
-        }
-
 
         public virtual void Move(Direction dir)
         {
@@ -60,10 +46,10 @@ namespace Wanderer
             if (dir == Direction.East && Map.GetTile(PosX + 1, PosY) == Map.TileType.Floor) PosX++;
         }
 
+        internal void CheckDirection()
+        {
+            throw new NotImplementedException();
+        }
 
-        //public virtual void Draw()
-        //{
-        //    Drawer.Draw(playerImage, PosX, PosY);
-        //}
     }
 }

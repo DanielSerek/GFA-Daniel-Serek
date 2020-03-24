@@ -9,6 +9,49 @@ namespace Lottery
     {
         static void Main(string[] args)
         {
+            //GetLotteryNumbers();
+            PetraLottery();
+        }
+
+
+        private static void PetraLottery()
+        {
+            StreamReader reader = new StreamReader(@"lottery.csv");
+            
+            List<int> listA = new List<int>();
+            List<int> listB = new List<int>();
+            List<int> listC = new List<int>();
+            List<int> listD = new List<int>();
+            List<int> listE = new List<int>();
+
+            while (!reader.EndOfStream)
+            {
+                var line = reader.ReadLine();
+                var values = line.Split(';');
+
+                listA.Add(int.Parse(values[11]));
+                listB.Add(int.Parse(values[12]));
+                listC.Add(int.Parse(values[13]));
+                listD.Add(int.Parse(values[14]));
+                listE.Add(int.Parse(values[15]));
+            }
+
+            listA.AddRange(listB);
+            listA.AddRange(listC);
+            listA.AddRange(listD);
+            listA.AddRange(listE);
+
+            var dict = listA.GroupBy(x => x).Select(g => new { Value = g.Key, Count = g.Count() }).OrderBy(x => x.Count).TakeLast(5);
+
+            foreach (var item in dict)
+            {
+                Console.WriteLine(item);
+            }
+
+        }
+
+        static void GetLotteryNumbers()
+        {
             string[] input = null;
 
             try
@@ -27,7 +70,7 @@ namespace Lottery
             for (int i = 0; i < input.Length; i++)
             {
                 helpArray = input[i].Split(";");
-                splitInput[i] = new string[helpArray.Length] ;
+                splitInput[i] = new string[helpArray.Length];
                 splitInput[i] = helpArray;
             }
 
