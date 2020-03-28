@@ -22,14 +22,17 @@ namespace Wanderer
         public int PosX;
         public int PosY;
         public Direction Dir;
-
-        public string Id { get; private set; }
+        public int MaxHP;
+        public int CurrentHP;
+        public int DP;
+        public int SP;
 
         protected Drawer Drawer;
         private Map Map;
+        public string Id { get; private set; }
 
 
-        public Character(int posX, int posY, Map map, Drawer drawer, string id )            // , string imagePath
+        public Character(int posX, int posY, Map map, Drawer drawer, string id )            
         {
             Id = id;
             PosX = posX;
@@ -46,10 +49,51 @@ namespace Wanderer
             if (dir == Direction.East && Map.GetTile(PosX + 1, PosY) == Map.TileType.Floor) PosX++;
         }
 
-        internal void CheckDirection()
+        public bool CheckDirection()
         {
-            throw new NotImplementedException();
+            if (Dir == Direction.North && Map.GetTile(PosX, PosY - 1) == Map.TileType.Wall) return false;
+            else if (Dir == Direction.South && Map.GetTile(PosX, PosY + 1) == Map.TileType.Wall) return false;
+            else if (Dir == Direction.West && Map.GetTile(PosX - 1, PosY) == Map.TileType.Wall) return false;
+            else if (Dir == Direction.East && Map.GetTile(PosX + 1, PosY) == Map.TileType.Wall) return false;
+            else return true;
         }
 
+        // TODO: Create a method which won't make the Skeleton go back
+        public void CheckPossibleOtherDirection()
+        {
+            if (Dir == Direction.North || Dir == Direction.South 
+                && (Map.GetTile(PosX - 1, PosY) == Map.TileType.Floor || Map.GetTile(PosX + 1, PosY) == Map.TileType.Floor)) GenerateDirection();
+            if (Dir == Direction.West || Dir == Direction.East
+                && (Map.GetTile(PosX, PosY - 1) == Map.TileType.Floor || Map.GetTile(PosX, PosY + 1) == Map.TileType.Floor)) GenerateDirection();
+        }
+
+        public void GenerateDirection()
+        {
+            Random random = new Random();
+            int rnd;
+            do
+            {
+                rnd = random.Next(4);
+                // Parsing number back to Enum
+                this.Dir = (Direction)rnd;
+            } while (!CheckDirection());
+        }
+
+        public bool CheckCurrentHP()
+        {
+            bool alive = true;
+            if (CurrentHP <= 0)
+            {
+                Drawer.RemoveImage(this);
+                alive = false;
+                // Delete Avalonia object
+                // Remove from Dictionary
+                // Set the object to null
+                // Check if all objects are null --> next level
+            }
+            return alive;
+        }
+
+        
     }
 }

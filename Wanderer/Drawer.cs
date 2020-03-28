@@ -63,9 +63,10 @@ namespace Wanderer
             Canvas.SetLeft(image, Left + xMap * PicSize);
             Canvas.SetTop(image, Top + yMap * PicSize);
             canvas.Children.Add(image);
+            
         }
 
-        public void DrawImage( Character ch, ImgType type)
+        public void DrawImage(Character ch, ImgType type)
         {
             Image image = new Avalonia.Controls.Image();
             Images.Add( ch.Id, image);
@@ -75,13 +76,17 @@ namespace Wanderer
             canvas.Children.Add(image);
         }
 
-        public void MoveImage( Character ch, ImgType type)
+        public void MoveImage(Character ch, ImgType type)
         {
             Image image = Images[ch.Id];
-
             image.Source = Resources[type];
             Canvas.SetLeft(image, Left + ch.PosX * PicSize);
             Canvas.SetTop(image, Top + ch.PosY * PicSize);
+        }
+
+        public void RemoveImage(Character ch)
+        {
+            canvas.Children.Remove(Images[ch.Id]);
         }
 
         //public void ClearCanvas()

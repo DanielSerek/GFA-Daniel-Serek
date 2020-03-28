@@ -10,6 +10,10 @@ namespace Wanderer
     {
         public Player(int posX, int posY, Map map, Drawer drawer, string id ) : base(posX, posY, map, drawer, id)
         {
+            Random random = new Random();
+            CurrentHP = 20 + 3 * random.Next(7);
+            DP = 2 * random.Next(7);
+            SP = 5 + random.Next(7);
         }
 
         public override void Move(Direction dir)
