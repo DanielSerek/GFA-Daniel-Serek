@@ -8,7 +8,7 @@ namespace Wanderer
     public static class GameControl
     {
         public static int Level;
-        //public static Drawer drawer { get; set; }
+        
 
 
         static GameControl()
@@ -16,6 +16,8 @@ namespace Wanderer
             Level = 1;
         }
 
+        
+        
         public static void Battle(Character player, Character enemy)
         {
             if (enemy == null) return;
@@ -27,7 +29,7 @@ namespace Wanderer
                 // Strike by a player
                 SV = player.SP + 2 * random.Next(7);
                 if (SV > enemy.DP) enemy.CurrentHP -= SV - enemy.DP;
-                if (!enemy.CheckCurrentHP()) break;
+                //if (!enemy.CheckCurrentHP()) break;
 
                 // Strike by an enemy
                 SV = enemy.SP + 2 * random.Next(7);

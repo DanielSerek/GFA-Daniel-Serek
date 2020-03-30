@@ -21,6 +21,7 @@ namespace Wanderer
         List<Character> skeletons = new List<Character>();
 
 
+
         public MainWindow()
         {
             InitializeComponent();
@@ -79,7 +80,7 @@ namespace Wanderer
 
 
         }
-
+        // Check free place in the map, not to create two skeletons on the same tile
         private bool CheckCollissions(int x, int y)
         {
             bool collision = false;
@@ -127,21 +128,12 @@ namespace Wanderer
                     GameControl.Battle(player, GetCharacter());
                     break;
             }
+            drawer.UpdateStatusText(player);
         }
 
-        public void DisplayTest()
-            {
-                // How to display text in Avalonia
-                TextBlock tb = new Avalonia.Controls.TextBlock();
-                tb.Text = "HP: ";
-                //tb.Foreground = SolidColorBrush.Parse("#ffffff");
-                tb.FontSize = 20;
-                canvas.Children.Add(tb);
-                Canvas.SetTop(tb, 730);
-                Canvas.SetLeft(tb, 10);
-            }   
+        
 
-
+        // Get the character on the position where a player is
         public Character GetCharacter()
             {
                 foreach (var skeleton in skeletons)

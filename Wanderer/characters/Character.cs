@@ -32,6 +32,7 @@ namespace Wanderer
         public string Id { get; private set; }
 
 
+
         public Character(int posX, int posY, Map map, Drawer drawer, string id )            
         {
             Id = id;
@@ -84,10 +85,12 @@ namespace Wanderer
             bool alive = true;
             if (CurrentHP <= 0)
             {
+                CurrentHP = 0;
                 Drawer.RemoveImage(this);
                 alive = false;
-                // Delete Avalonia object
-                // Remove from Dictionary
+                Drawer.Images.Remove(this.Id);
+                
+                
                 // Set the object to null
                 // Check if all objects are null --> next level
             }
