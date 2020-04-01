@@ -113,8 +113,8 @@ namespace Wanderer
                     randomNumber = random.Next(1, 100);
                     if (randomNumber <= wallsPercentage) {
                         GameMap[i, j] = TileType.Wall;
-
-                    } else {
+                    } 
+                    else {
                         GameMap[i, j] = TileType.Floor;
                         floorCount++;
                     }

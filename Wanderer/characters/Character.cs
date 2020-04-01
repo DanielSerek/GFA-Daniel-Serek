@@ -29,9 +29,8 @@ namespace Wanderer
 
         protected Drawer Drawer;
         private Map Map;
+        
         public string Id { get; private set; }
-
-
 
         public Character(int posX, int posY, Map map, Drawer drawer, string id )            
         {
@@ -80,7 +79,7 @@ namespace Wanderer
             } while (!CheckDirection());
         }
 
-        public bool CheckCurrentHP()
+        public bool RemoveImage()
         {
             bool alive = true;
             if (CurrentHP <= 0)
@@ -89,14 +88,12 @@ namespace Wanderer
                 Drawer.RemoveImage(this);
                 alive = false;
                 Drawer.Images.Remove(this.Id);
-                
-                
-                // Set the object to null
-                // Check if all objects are null --> next level
+                if (this is Player)
+                {
+                    Drawer.GameOver();
+                }
             }
             return alive;
         }
-
-        
     }
 }

@@ -9,9 +9,10 @@ namespace Wanderer.characters
         public Boss(int posX, int posY, Map map, Drawer drawer, string id) : base(posX, posY, map, drawer, id)
         {
             Random random = new Random();
-            CurrentHP = 2 * GameControl.Level * random.Next(7) + random.Next(7);
-            DP = GameControl.Level / 2 * random.Next(7) + random.Next(7) / 2;
-            SP = GameControl.Level * random.Next(7) + GameControl.Level;
+            MaxHP = 2 * GameControl.Level * random.Next(1, 7) + random.Next(1, 7);
+            CurrentHP = MaxHP;
+            DP = GameControl.Level / 2 * random.Next(1, 7) + random.Next(1, 7) / 2;
+            SP = GameControl.Level * random.Next(1, 7) + GameControl.Level;
         }
     }
 }

@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.Text;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Media;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media.Imaging;
+using Wanderer.characters;
+
 
 namespace Wanderer
 {
@@ -96,12 +99,48 @@ namespace Wanderer
 
         public void RemoveImage(Character ch)
         {
-            canvas.Children.Remove(Images[ch.Id]);
+            if (!(ch is Player) || !(ch is Boss))
+            {
+                canvas.Children.Remove(Images[ch.Id]);
+                Images.Remove(ch.Id);
+            }
         }
 
         public void UpdateStatusText(Character player)
         {
             tb.Text = $"Player:\nHealth Points: {player.CurrentHP}";
+        }
+
+        public void GameOver()
+        {
+            TextBlock textblock = CenterText("game over", SetColor(255, 0, 0), Darken(156));
+            canvas.Children.Add(textblock);
+        }
+
+        private TextBlock CenterText(string text, SolidColorBrush foreground, SolidColorBrush background)
+        {
+            var output = new TextBlock();
+
+            output.Text = text.ToUpper();
+            output.TextAlignment = TextAlignment.Center;
+            output.Foreground = foreground;
+            output.Background = background;
+            output.FontWeight = FontWeight.Black;
+            output.FontSize = 80;
+            output.Width = 720;
+            output.Height = 120;
+            Canvas.SetTop(output, 320);
+            return output;
+        }
+
+        private SolidColorBrush SetColor(byte r, byte g, byte b)
+        {
+            return new SolidColorBrush(new Color(255, r, g, b));
+        }
+
+        private SolidColorBrush Darken(byte a)
+        {
+            return new SolidColorBrush(new Color(a, 0, 0, 0));
         }
     }
 }
