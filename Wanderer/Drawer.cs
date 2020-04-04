@@ -91,10 +91,13 @@ namespace Wanderer
 
         public void MoveImage(Character ch, ImgType type)
         {
-            Image image = Images[ch.Id];
-            image.Source = Resources[type];
-            Canvas.SetLeft(image, Left + ch.PosX * PicSize);
-            Canvas.SetTop(image, Top + ch.PosY * PicSize);
+            if (Images.ContainsKey(ch.Id))
+            {
+                Image image = Images[ch.Id];
+                image.Source = Resources[type];
+                Canvas.SetLeft(image, Left + ch.PosX * PicSize);
+                Canvas.SetTop(image, Top + ch.PosY * PicSize);
+            }
         }
 
         public void RemoveImage(Character ch)
@@ -106,14 +109,20 @@ namespace Wanderer
             }
         }
 
-        public void UpdateStatusText(Character player)
+        public void UpdateStatusText(string input)
         {
-            tb.Text = $"Player:\nHealth Points: {player.CurrentHP}";
+            tb.Text = input;
         }
 
         public void GameOver()
         {
             TextBlock textblock = CenterText("game over", SetColor(255, 0, 0), Darken(156));
+            canvas.Children.Add(textblock);
+        }
+
+        public void Loading()
+        {
+            TextBlock textblock = CenterText("LOADING...", SetColor(255, 0, 0), Darken(156));
             canvas.Children.Add(textblock);
         }
 

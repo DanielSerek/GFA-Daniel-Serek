@@ -10,6 +10,7 @@ namespace Wanderer
     public class GameControl
     {
         public static int Level;
+        private bool levelPreparation;
 
         public Character player = null;
         public Character boss = null;
@@ -77,28 +78,29 @@ namespace Wanderer
             {
                 case Key.Left:
                     player.Move(Character.Direction.West);
-                    SkeletonsMove();
+                    //SkeletonsMove();
                     break;
                 case Key.Right:
                     player.Move(Character.Direction.East);
-                    SkeletonsMove();
                     break;
                 case Key.Up:
                     player.Move(Character.Direction.North);
-                    SkeletonsMove();
                     break;
                 case Key.Down:
                     player.Move(Character.Direction.South);
-                    SkeletonsMove();
                     break;
                 case Key.Space:
                     Battle(player, GetCharacter());
                     break;
             }
-            Drawer.UpdateStatusText(player);
-            CheckStatus();
+            Drawer.UpdateStatusText(StatusText());
+            //CheckStatus();
         }
 
+        private string StatusText()
+        {
+            return $"Level: {Level}\nHealth Points: {player.CurrentHP} / {player.MaxHP}";
+        }
 
 
         // Check free place in the map, not to create two skeletons on the same tile
@@ -134,6 +136,7 @@ namespace Wanderer
             {
                 if (player.PosX == skeleton.PosX && player.PosY == skeleton.PosY) return skeleton;
             }
+            if (boss == null) return null;
             if (player.PosX == boss.PosX && player.PosY == boss.PosY) return boss;
             return null;
         }
@@ -149,7 +152,7 @@ namespace Wanderer
                 // Strike by a player
                 SV = player.SP + 2 * random.Next(7);
                 if (SV > enemy.DP) enemy.CurrentHP -= SV - enemy.DP;
-                //if (!enemy.CheckCurrentHP()) break;
+                if (enemy.CurrentHP <= 0) break;
 
                 // Strike by an enemy
                 SV = enemy.SP + 2 * random.Next(7);
@@ -169,20 +172,44 @@ namespace Wanderer
             }
         }
         // Checks if conditions for next level were met and sets a new level
-        private void CheckStatus()
+        public void CheckStatus()
         {
+            if (levelPreparation)
+            {
+                CreateNewLevel();
+                return;
+            }
             if (skeletons.Count == 0 && boss == null)
             {
-                Level++;
-                GenerateSkeletons(Level + 2);
-                GenerateBoss();
-
-                Random random = new Random();
-                int rnd = random.Next(1, 101);
-                if (rnd <= 10) player.CurrentHP += player.MaxHP;
-                if (rnd > 10 && rnd <= 40) player.CurrentHP += player.MaxHP / 3;
-                if (rnd > 50) player.CurrentHP += player.MaxHP / 10;
+                Drawer.Loading();//WHY IT DOESNT WORK???
+                levelPreparation = true;
+                return;
+            }
+            if (player.CurrentHP <= 0)
+            {
+                Drawer.GameOver();
+                //TODO: Pause and a new game
             }
         }
+
+        private void CreateNewLevel()
+        {
+            Level++;
+            levelPreparation = false;
+            skeletons.Clear();
+            Drawer.Images.Clear();
+            Map.GenerateMap(58);
+            GenerateSkeletons(Level + 2);
+            GenerateBoss();
+            GeneratePlayer();
+
+            Random random = new Random();
+            int rnd = random.Next(1, 101);
+            if (rnd <= 10) player.CurrentHP = player.MaxHP;
+            if (rnd > 10 && rnd <= 40) player.CurrentHP += (player.MaxHP - player.CurrentHP) / 3;
+            if (rnd > 50) player.CurrentHP += (player.MaxHP - player.CurrentHP) / 10;
+        }
+
+
     }
 }

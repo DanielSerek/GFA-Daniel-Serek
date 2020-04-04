@@ -20,7 +20,7 @@ namespace Wanderer
 
         private Drawer Drawer;
         public TileType[,] GameMap = null;
-        private int mapSize;
+        public int mapSize;
 
         public Map(Drawer drawer, int mapSize)
         {

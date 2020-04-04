@@ -88,10 +88,7 @@ namespace Wanderer
                 Drawer.RemoveImage(this);
                 alive = false;
                 Drawer.Images.Remove(this.Id);
-                if (this is Player)
-                {
-                    Drawer.GameOver();
-                }
+                
             }
             return alive;
         }
