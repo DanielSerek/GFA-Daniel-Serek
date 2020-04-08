@@ -1,14 +1,10 @@
-﻿using Avalonia.Controls;
-using Avalonia.Media.Imaging;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System;
 
 namespace Wanderer
 {
     public class Player : Character
     {
-        public Player(int posX, int posY, Map map, Drawer drawer, string id ) : base(posX, posY, map, drawer, id)
+        public Player(int posX, int posY, Map map, Drawer drawer, GameControl gameControl, string id) : base(posX, posY, map, drawer, gameControl, id)
         {
             Random random = new Random();
             MaxHP = 20 + 3 * random.Next(1, 7);
@@ -23,7 +19,8 @@ namespace Wanderer
 
             Drawer.ImgType img_type = Drawer.ImgType.HeroDown;
 
-            switch ( dir ) {
+            switch (dir)
+            {
                 case Direction.West:
                     img_type = Drawer.ImgType.HeroLeft;
                     Drawer.MoveImage(this, img_type);
@@ -46,5 +43,5 @@ namespace Wanderer
             }
 
         }
-    } 
+    }
 }

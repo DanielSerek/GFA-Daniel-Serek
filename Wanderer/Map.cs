@@ -1,10 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
-using Avalonia.Media.Imaging;
-using System.Text;
 
 namespace Wanderer
 {
@@ -35,15 +29,20 @@ namespace Wanderer
             Random random = new Random();
             int floorCount = 0; //wallsCount variable is needed in floodFill method
             int randomNumber;
-            
+
             GameMap = new TileType[mapSize, mapSize];
 
-            for (int i = 0; i < mapSize; i++) {
-                for (int j = 0; j < mapSize; j++) {
+            for (int i = 0; i < mapSize; i++)
+            {
+                for (int j = 0; j < mapSize; j++)
+                {
                     randomNumber = random.Next(0, 100);
-                    if (randomNumber <= wallsPercentage) {
+                    if (randomNumber <= wallsPercentage)
+                    {
                         GameMap[i, j] = TileType.Wall;
-                    } else {
+                    }
+                    else
+                    {
                         GameMap[i, j] = TileType.Flooded;
                         floorCount++;
                     }
@@ -51,15 +50,17 @@ namespace Wanderer
             }
 
             int chf = 0;
-            do {
+            do
+            {
                 floorCount = GenerateNewMap(wallsPercentage);
                 int i, j = 0;
-                if (FindFreeCell(out i, out j)) {
+                if (FindFreeCell(out i, out j))
+                {
                     FloodFill(i, j);
                 }
                 chf = CheckFloodFill();
             } while (chf != floorCount);
-            
+
             PrepareMap();
 
             PrintMap();
@@ -75,9 +76,11 @@ namespace Wanderer
 
         public bool FindFreeCell(out int x, out int y)
         {
-            for (int i = 0; i < GameMap.GetLength(0); i++) {
-                for (int j = 0; j < GameMap.GetLength(1); j++) {
-                    if (GameMap[i, j] == TileType.Floor) 
+            for (int i = 0; i < GameMap.GetLength(0); i++)
+            {
+                for (int j = 0; j < GameMap.GetLength(1); j++)
+                {
+                    if (GameMap[i, j] == TileType.Floor)
                     {
                         x = i;
                         y = j;
@@ -93,10 +96,12 @@ namespace Wanderer
 
         public void PrintMap()
         {
-            for (int i = 0; i < GameMap.GetLength(0); i++) {
-                for (int j = 0; j < GameMap.GetLength(1); j++) {
-                    if (GameMap[i, j] == TileType.Wall) Drawer.DrawImage(i.ToString()+j.ToString(), Drawer.ImgType.Wall, i, j);
-                    else Drawer.DrawImage(i.ToString()+j.ToString(), Drawer.ImgType.Floor, i, j);
+            for (int i = 0; i < GameMap.GetLength(0); i++)
+            {
+                for (int j = 0; j < GameMap.GetLength(1); j++)
+                {
+                    if (GameMap[i, j] == TileType.Wall) Drawer.DrawMapImage(Drawer.ImgType.Wall, i, j);
+                    else Drawer.DrawMapImage(Drawer.ImgType.Floor, i, j);
                 }
             }
         }
@@ -108,13 +113,17 @@ namespace Wanderer
             int floorCount = 0; //wallsCount variable is needed in floodFill method
             int randomNumber;
 
-            for (int i = 0; i < GameMap.GetLength(0); i++) {
-                for (int j = 0; j < GameMap.GetLength(1); j++) {
+            for (int i = 0; i < GameMap.GetLength(0); i++)
+            {
+                for (int j = 0; j < GameMap.GetLength(1); j++)
+                {
                     randomNumber = random.Next(1, 100);
-                    if (randomNumber <= wallsPercentage) {
+                    if (randomNumber <= wallsPercentage)
+                    {
                         GameMap[i, j] = TileType.Wall;
-                    } 
-                    else {
+                    }
+                    else
+                    {
                         GameMap[i, j] = TileType.Floor;
                         floorCount++;
                     }
@@ -126,9 +135,12 @@ namespace Wanderer
         // Change of flooded tiles back to floor tiles
         void PrepareMap()
         {
-            for (int i = 0; i < GameMap.GetLength(0); i++) {
-                for (int j = 0; j < GameMap.GetLength(1); j++) {
-                    if (GameMap[i, j] == TileType.Flooded) {
+            for (int i = 0; i < GameMap.GetLength(0); i++)
+            {
+                for (int j = 0; j < GameMap.GetLength(1); j++)
+                {
+                    if (GameMap[i, j] == TileType.Flooded)
+                    {
                         GameMap[i, j] = TileType.Floor;
                     }
                 }
@@ -140,9 +152,12 @@ namespace Wanderer
         int CheckFloodFill()
         {
             int count = 0;
-            for (int i = 0; i < GameMap.GetLength(0); i++) {
-                for (int j = 0; j < GameMap.GetLength(1); j++) {
-                    if (GameMap[i, j] == TileType.Flooded) {
+            for (int i = 0; i < GameMap.GetLength(0); i++)
+            {
+                for (int j = 0; j < GameMap.GetLength(1); j++)
+                {
+                    if (GameMap[i, j] == TileType.Flooded)
+                    {
                         count++;
                     }
                 }

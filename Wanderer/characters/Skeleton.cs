@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Wanderer.characters
 {
     public class Skeleton : Character
     {
-        public Skeleton(int posX, int posY, Map map, Drawer drawer, string id ) : base(posX, posY, map, drawer, id)
+        public Skeleton(int posX, int posY, Map map, Drawer drawer, GameControl gameControl, string id) : base(posX, posY, map, drawer, gameControl, id)
         {
             Random random = new Random();
             MaxHP = 2 * GameControl.Level * random.Next(1, 7);
@@ -15,16 +13,21 @@ namespace Wanderer.characters
             SP = GameControl.Level * random.Next(1, 7);
         }
 
-        
-        public void MoveSkeleton()
-        {
-            while (!this.CheckDirection())
-            {
-                this.GenerateDirection();
-            }
-            //this.CheckPossibleOtherDirection();
-            this.Move(this.Dir);
-        }
+
+        //public void MoveSkeleton()
+        //{
+        //    bool canMove = true;
+        //    while (!this.CheckDirection())
+        //    {
+        //        if (!GenerateDirection())
+        //        {
+        //            canMove = false;
+        //            break;
+        //        }
+        //    }
+        //    //this.CheckPossibleOtherDirection();
+        //    if(canMove) this.Move(this.Dir);
+        //}
 
         public override void Move(Direction dir)
         {

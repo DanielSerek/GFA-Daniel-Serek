@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Avalonia;
-using Avalonia.Controls;
+﻿using Avalonia.Controls;
 using Avalonia.Media;
-using Avalonia.Markup.Xaml;
 using Avalonia.Media.Imaging;
+using System.Collections.Generic;
 using Wanderer.characters;
 
 
@@ -32,7 +28,7 @@ namespace Wanderer
         private Dictionary<ImgType, Bitmap> Resources;
         private static string ImagePath = @"../../../img/";
         public Dictionary<string, Image> Images; // Dictionary is used to call different Image objects
-        private TextBlock tb; 
+        private TextBlock tb;
 
         public Drawer(Canvas canvas, int picsize, int left, int top)
         {
@@ -69,24 +65,27 @@ namespace Wanderer
             Canvas.SetLeft(tb, 10);
         }
 
-        public void DrawImage(string imageName, ImgType type, int xMap, int yMap)
+        public void DrawImage(string imageName, ImgType type, int x, int y)
         {
             Image image = new Avalonia.Controls.Image();
-            Images.Add(imageName, image);
+            if (imageName != null)
+            {
+                Images.Add(imageName, image);
+            }
             image.Source = Resources[type];
-            Canvas.SetLeft(image, Left + xMap * PicSize);
-            Canvas.SetTop(image, Top + yMap * PicSize);
+            Canvas.SetLeft(image, Left + x * PicSize);
+            Canvas.SetTop(image, Top + y * PicSize);
             canvas.Children.Add(image);
         }
 
         public void DrawImage(Character ch, ImgType type)
         {
-            Image image = new Avalonia.Controls.Image();
-            Images.Add( ch.Id, image);
-            image.Source = Resources[type];
-            Canvas.SetLeft(image, Left + ch.PosX * PicSize);
-            Canvas.SetTop(image, Top + ch.PosY * PicSize);
-            canvas.Children.Add(image);
+            DrawImage(ch.Id, type, ch.PosX, ch.PosY);
+        }
+
+        public void DrawMapImage(ImgType type, int x, int y)
+        {
+            DrawImage(null, type, x, y);
         }
 
         public void MoveImage(Character ch, ImgType type)
@@ -116,13 +115,17 @@ namespace Wanderer
 
         public void GameOver()
         {
-            TextBlock textblock = CenterText("game over", SetColor(255, 0, 0), Darken(156));
-            canvas.Children.Add(textblock);
+            DrawCenterText("game over");
         }
 
         public void Loading()
         {
-            TextBlock textblock = CenterText("LOADING...", SetColor(255, 0, 0), Darken(156));
+            DrawCenterText("LOADING...");
+        }
+
+        private void DrawCenterText(string str)
+        {
+            TextBlock textblock = CenterText(str, SetColor(255, 0, 0), Darken(156));
             canvas.Children.Add(textblock);
         }
 

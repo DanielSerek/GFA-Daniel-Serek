@@ -1,8 +1,5 @@
-﻿using Avalonia.Controls;
-using Avalonia.Input;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using Wanderer.characters;
 
 namespace Wanderer
@@ -10,37 +7,48 @@ namespace Wanderer
     public class GameControl
     {
         public static int Level;
-        private bool levelPreparation;
+        private bool levelPreparation = false;
 
         public Character player = null;
         public Character boss = null;
         public List<Character> skeletons = new List<Character>();
 
         private Map Map;
-        private Drawer Drawer; // Dá se nějak vyhnout použití draweru? Potřebuji jej ale pro vykreslování skeletonů...
+        private Drawer Drawer; 
 
         public GameControl(Map map, Drawer drawer)
         {
             Level = 1;
             Map = map;
             Drawer = drawer;
-            GeneratePlayer();
-            GenerateSkeletons(3);
+            GenerateNewPlayer();
             GenerateBoss();
+            GenerateSkeletons(3);
         }
 
-        public void GeneratePlayer()
+        private void GenerateNewPlayer()
         {
             int x, y;
             Map.FindFreeCell(out x, out y);
-            player = new Player(x, y, Map, Drawer, "player");
+            player = new Player(x, y, Map, Drawer, this, "player");
             Drawer.DrawImage(player, Drawer.ImgType.HeroDown);
         }
 
-        public void GenerateSkeletons(int num)
+        private void GeneratePlayer()
+        {
+            int x, y;
+            Map.FindFreeCell(out x, out y);
+            player.PosX = x;
+            player.PosY = y;
+            Drawer.DrawImage(player, Drawer.ImgType.HeroDown);
+        }
+
+        private void GenerateSkeletons(int num)
         {
             // Generate skeletons 
             int x, y;
+            num = 1; // TO BE DELETED
+
             for (int i = 0; i < num; i++)
             {
                 // Find an empty random cell in the map
@@ -48,18 +56,19 @@ namespace Wanderer
                 {
                     Map.RandomCell(out x, out y);
                 } while (CheckCollissions(x, y));
+
                 // Add Skeleton to the list of Skeletons
-                skeletons.Add(new Skeleton(x, y, Map, Drawer, "skeleton" + i.ToString()));
+                skeletons.Add(new Skeleton(x, y, Map, Drawer, this, "skeleton" + i.ToString()));
                 // Set Skeleton initial direction
                 while (!skeletons[i].CheckDirection())
                 {
-                    skeletons[i].GenerateDirection();
+                    if (!skeletons[i].GenerateDirection()) break;
                 }
                 Drawer.DrawImage("skeleton" + i.ToString(), Drawer.ImgType.Skeleton, x, y);
             }
         }
 
-        public void GenerateBoss()
+        private void GenerateBoss()
         {
             // Generate a boss
             int x, y;
@@ -67,35 +76,29 @@ namespace Wanderer
             {
                 Map.RandomCell(out x, out y);
             } while (CheckCollissions(x, y));
-            boss = new Boss(x, y, Map, Drawer, "boss");
+            boss = new Boss(x, y, Map, Drawer, this, "boss");
             Drawer.DrawImage(boss, Drawer.ImgType.Boss);
         }
 
-        public void MainWindow_Key(object sender, KeyEventArgs e)
+        public void PlayerMove()
         {
+            if (player == null) return;
+            player.Move(player.Dir);
 
-            switch (e.Key)
-            {
-                case Key.Left:
-                    player.Move(Character.Direction.West);
-                    //SkeletonsMove();
-                    break;
-                case Key.Right:
-                    player.Move(Character.Direction.East);
-                    break;
-                case Key.Up:
-                    player.Move(Character.Direction.North);
-                    break;
-                case Key.Down:
-                    player.Move(Character.Direction.South);
-                    break;
-                case Key.Space:
-                    Battle(player, GetCharacter());
-                    break;
-            }
-            Drawer.UpdateStatusText(StatusText());
             //CheckStatus();
         }
+
+        //  gameControl.Battle(gameControl.player, gameControl.GetCharacter());
+        public void BattlePlayer()
+        {
+            Battle(player, GetCharacter());
+        }
+
+        public void ShowStatus()
+        {
+            Drawer.UpdateStatusText(StatusText());
+        }
+
 
         private string StatusText()
         {
@@ -122,29 +125,48 @@ namespace Wanderer
         }
 
         public void SkeletonsMove()
-         {
+        {
             for (int i = 0; i < skeletons.Count; i++)
             {
-                ((Skeleton)skeletons[i]).MoveSkeleton();
+                NavigateEnemyToPlayer(skeletons[i]);
+                skeletons[i].Move(skeletons[i].Dir);
+                //if (player.PosX != skeletons[i].PosX || player.PosY != skeletons[i].PosY) ((Skeleton)skeletons[i]).MoveSkeleton();
             }
         }
 
         // Get the character on the position where a player is
-        public Character GetCharacter()
+        private Character GetCharacter()
         {
             foreach (var skeleton in skeletons)
             {
-                if (player.PosX == skeleton.PosX && player.PosY == skeleton.PosY) return skeleton;
+                if (StandingNext(skeleton)) return skeleton;
             }
             if (boss == null) return null;
-            if (player.PosX == boss.PosX && player.PosY == boss.PosY) return boss;
+            if (StandingNext(boss)) return boss;
             return null;
         }
 
-        public void Battle(Character player, Character enemy)
+        private bool StandingNext(Character ch)
+        {
+            if (((player.PosX == ch.PosX - 1) || (player.PosX == ch.PosX + 1)) && (player.PosY == ch.PosY)) return true;
+            if (((player.PosY == ch.PosY - 1) || (player.PosY == ch.PosY + 1)) && (player.PosX == ch.PosX)) return true;
+            else return false;
+        }
+
+        private bool FacingTowardsEnemy(Character ch)
+        {
+            if ((player.Dir == Character.Direction.East) && (ch.PosX == player.PosX + 1)) return true;
+            if ((player.Dir == Character.Direction.West) && (ch.PosX == player.PosX - 1)) return true;
+            if ((player.Dir == Character.Direction.North) && (ch.PosY == player.PosY - 1)) return true;
+            if ((player.Dir == Character.Direction.South) && (ch.PosY == player.PosY + 1)) return true;
+            return false;
+        }
+
+
+        private void Battle(Character player, Character enemy)
         {
             if (enemy == null) return;
-
+            if (!FacingTowardsEnemy(enemy)) return; 
             int SV = 0;
             Random random = new Random();
             do
@@ -171,6 +193,7 @@ namespace Wanderer
                 boss = null;
             }
         }
+
         // Checks if conditions for next level were met and sets a new level
         public void CheckStatus()
         {
@@ -181,7 +204,7 @@ namespace Wanderer
             }
             if (skeletons.Count == 0 && boss == null)
             {
-                Drawer.Loading();//WHY IT DOESNT WORK???
+                Drawer.Loading();
                 levelPreparation = true;
                 return;
             }
@@ -210,6 +233,26 @@ namespace Wanderer
             if (rnd > 50) player.CurrentHP += (player.MaxHP - player.CurrentHP) / 10;
         }
 
+        public void NavigateEnemyToPlayer(Character ch)
+        {
+            //if (player.PosX >= ch.PosX) ch.Dir = Character.Direction.East;
+            //if (player.PosX <= ch.PosX) ch.Dir = Character.Direction.West;
+            //if (player.PosY <= ch.PosY) ch.Dir = Character.Direction.North;
+            //if (player.PosY >= ch.PosY) ch.Dir = Character.Direction.South;
+
+            // Player X Y
+            // ch X Y
+            PathFinder pathFinder = new PathFinder();
+            int goToX, goToY;
+            pathFinder.PathFinding(ch.PosX, ch.PosY, player.PosX, player.PosY, Map, out goToX, out goToY);
+
+            if (goToX > ch.PosX) ch.Dir = Character.Direction.East;
+            if (goToX < ch.PosX) ch.Dir = Character.Direction.West;
+            if (goToY > ch.PosY) ch.Dir = Character.Direction.South;
+            if (goToY < ch.PosY) ch.Dir = Character.Direction.North;
+        }
+
+        
 
     }
 }
