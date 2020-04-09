@@ -14,9 +14,11 @@ namespace Wanderer
         public int G;  //The G score is the distance from the starting point
         public int H;  //H score is the estimated distance from the destination (calculated as the city block distance) 
         public PathFinder Parent;
-                       
+        public List<Position> positions;
 
-        public void PathFinding(int currentX, int currentY, int playerX, int playerY, Map map, out int goToX, out int goToY)
+
+
+        public List<Position> PathFinding(int currentX, int currentY, int playerX, int playerY, Map map)
         {
             PathFinder current = null;
             PathFinder start = new PathFinder { X = currentX, Y = currentY };
@@ -84,16 +86,22 @@ namespace Wanderer
                     }
                 }
             }
-            closedList.RemoveAt(0);
+            
+            //int Fmin = closedList[closedList.Count - 1].F;
 
-            //foreach (var item in closedList)
-            //{
+            positions = new List<Position>();
 
-            //}
-            var lowestNum = closedList.Min(l => l.F);
-            var firstPosition = closedList.First(l => l.F == lowestNum);
-            goToX = firstPosition.X;
-            goToY = firstPosition.Y;
+            foreach (var item in closedList)
+            {
+                //if (item.F == Fmin) 
+                positions.Add(new Position(item.X, item.Y));
+            }
+            positions.RemoveAt(0);
+            return positions;
+            //var lowestNum = closedList.Min(l => l.F);
+            //var firstPosition = closedList.First(l => l.F == lowestNum);
+            //goToX = firstPosition.X;
+            //goToY = firstPosition.Y;
         }
 
         static int ComputeHScore(int x, int y, int targetX, int targetY)

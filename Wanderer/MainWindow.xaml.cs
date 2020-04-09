@@ -23,9 +23,10 @@ namespace Wanderer
             drawer = new Drawer(canvas, 72, 0, 0);
 
             Timer = new DispatcherTimer();
-            Timer.Interval = TimeSpan.FromSeconds(1);
+            Timer.Interval = TimeSpan.FromSeconds(0.5);
             Timer.Tick += Timer_Tick;
             Timer.Start();
+
 
             // Generate a map
             Map Map = new Map(drawer, 10);
@@ -47,29 +48,30 @@ namespace Wanderer
             switch (e.Key)
             {
                 case Key.Left:
-                    gameControl.player.Dir = Character.Direction.West;
-                    gameControl.PlayerMove();
+                    PlayerMoveToDirection(Character.Direction.West);
                     break;
                 case Key.Right:
-                    gameControl.player.Dir = Character.Direction.East;
-                    gameControl.PlayerMove();
+                    PlayerMoveToDirection(Character.Direction.East);
                     break;
                 case Key.Up:
-                    gameControl.player.Dir = Character.Direction.North;
-                    gameControl.PlayerMove();
+                    PlayerMoveToDirection(Character.Direction.North);
                     break;
                 case Key.Down:
-                    gameControl.player.Dir = Character.Direction.South;
-                    gameControl.PlayerMove();
-                    
+                    PlayerMoveToDirection(Character.Direction.South);
                     break;
                 case Key.Space:
                     gameControl.BattlePlayer();
                     break;
             }
-            
-            //throw new NotImplementedException();
         }
+
+        public void PlayerMoveToDirection(Character.Direction direction)
+        {
+            gameControl.DefinePathsForSkeletons();
+            gameControl.Player.Dir = direction;
+            gameControl.PlayerMove();
+        }
+
 
         /// <summary>
         /// 
@@ -80,7 +82,7 @@ namespace Wanderer
         {
             gameControl.ShowStatus();
             gameControl.CheckStatus();
-            gameControl.SkeletonsMove();
+            gameControl.MoveSkeletons();
         }
 
         private void InitializeComponent()

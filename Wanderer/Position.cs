@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Wanderer
 {
-    class Position
+    public class Position
     {
         public int PosX;
         public int PosY;

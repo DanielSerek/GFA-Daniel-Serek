@@ -56,12 +56,12 @@ namespace Wanderer
         private bool CheckTileOccupancy(int x, int y)
         {
             if (Map.GetTile(x, y) == Map.TileType.Wall) return false;
-            if (GameControl.player.PosX == x && GameControl.player.PosY == y) return false;
-            for (int i = 0; i < GameControl.skeletons.Count; i++)
+            if (GameControl.Player.PosX == x && GameControl.Player.PosY == y) return false;
+            for (int i = 0; i < GameControl.Skeletons.Count; i++)
             {
-                if (GameControl.skeletons[i].PosX == x && GameControl.skeletons[i].PosY == y) return false;
+                if (GameControl.Skeletons[i].PosX == x && GameControl.Skeletons[i].PosY == y) return false;
             }
-            if (GameControl.boss != null && GameControl.boss.PosX == x && GameControl.boss.PosY == y) return false;
+            if (GameControl.Boss != null && GameControl.Boss.PosX == x && GameControl.Boss.PosY == y) return false;
             return true;
         }
 
@@ -102,5 +102,7 @@ namespace Wanderer
             }
             return alive;
         }
+
+        
     }
 }
