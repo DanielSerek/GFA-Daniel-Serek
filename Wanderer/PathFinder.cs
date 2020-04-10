@@ -8,15 +8,13 @@ namespace Wanderer
 {
     public class PathFinder
     {
-        public int X;
-        public int Y;
-        public int F;  // G + H
-        public int G;  //The G score is the distance from the starting point
-        public int H;  //H score is the estimated distance from the destination (calculated as the city block distance) 
-        public PathFinder Parent;
-        public List<Position> positions;
-
-
+        private List<Position> positions;
+        private int X;
+        private int Y;
+        private int F;  // G + H
+        private int G;  //The G score is the distance from the starting point
+        private int H;  //H score is the estimated distance from the destination (calculated as the city block distance) 
+        private PathFinder Parent;
 
         public List<Position> PathFinding(int currentX, int currentY, int playerX, int playerY, Map map)
         {
@@ -86,22 +84,13 @@ namespace Wanderer
                     }
                 }
             }
-            
-            //int Fmin = closedList[closedList.Count - 1].F;
-
             positions = new List<Position>();
-
             foreach (var item in closedList)
             {
-                //if (item.F == Fmin) 
                 positions.Add(new Position(item.X, item.Y));
             }
             positions.RemoveAt(0);
             return positions;
-            //var lowestNum = closedList.Min(l => l.F);
-            //var firstPosition = closedList.First(l => l.F == lowestNum);
-            //goToX = firstPosition.X;
-            //goToY = firstPosition.Y;
         }
 
         static int ComputeHScore(int x, int y, int targetX, int targetY)
@@ -113,16 +102,10 @@ namespace Wanderer
         {
         
             List<PathFinder> proposedLocations = new List<PathFinder>();
-            //{
-            //    new PathFinder { X = x, Y = y - 1 },
-            //    new PathFinder { X = x, Y = y + 1 },
-            //    new PathFinder { X = x - 1, Y = y },
-            //    new PathFinder { X = x + 1, Y = y },
-            //};
             if (y > 0) proposedLocations.Add(new PathFinder() { X = x, Y = y - 1});
             if (x > 0) proposedLocations.Add(new PathFinder() { X = x - 1, Y = y});
-            if (y < map.GameMap.GetLength(1)) proposedLocations.Add(new PathFinder() { X = x, Y = y + 1});
-            if (x < map.GameMap.GetLength(0)) proposedLocations.Add(new PathFinder() { X = x + 1, Y = y});
+            if (y < map.MapSize) proposedLocations.Add(new PathFinder() { X = x, Y = y + 1});
+            if (x < map.MapSize) proposedLocations.Add(new PathFinder() { X = x + 1, Y = y});
 
             return proposedLocations.Where(l => map.GetTile(l.X, l.Y) == TileType.Floor).ToList();
         }

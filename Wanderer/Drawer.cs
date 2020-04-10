@@ -21,61 +21,61 @@ namespace Wanderer
             Boss
         }
 
-        internal Canvas canvas;
+        public Canvas Canvas;
         public int PicSize = 72;
-        private int Left;
-        private int Top;
-        private Dictionary<ImgType, Bitmap> Resources;
-        private static string ImagePath = @"../../../img/";
         public Dictionary<string, Image> Images; // Dictionary is used to call different Image objects
+        private int left;
+        private int top;
+        private Dictionary<ImgType, Bitmap> resources;
+        private static string imagePath = @"../../../img/";
         private TextBlock tb;
 
         public Drawer(Canvas canvas, int picsize, int left, int top)
         {
-            this.canvas = canvas;
+            Canvas = canvas;
             PicSize = picsize;
-            Left = left;
-            Top = top;
-            Resources = new Dictionary<ImgType, Bitmap>();
+            this.left = left;
+            this.top = top;
+            resources = new Dictionary<ImgType, Bitmap>();
             Images = new Dictionary<string, Image>();
-
             Load();
             TextBlockDisplay();
         }
 
+        // Load all pictures into resources Dictionary
         private void Load()
         {
-            Resources.Add(ImgType.Floor, new Avalonia.Media.Imaging.Bitmap(ImagePath + "floor.png"));
-            Resources.Add(ImgType.Wall, new Avalonia.Media.Imaging.Bitmap(ImagePath + "wall.png"));
-            Resources.Add(ImgType.HeroDown, new Avalonia.Media.Imaging.Bitmap(ImagePath + "hero-down.png"));
-            Resources.Add(ImgType.HeroUp, new Avalonia.Media.Imaging.Bitmap(ImagePath + "hero-up.png"));
-            Resources.Add(ImgType.HeroLeft, new Avalonia.Media.Imaging.Bitmap(ImagePath + "hero-left.png"));
-            Resources.Add(ImgType.HeroRight, new Avalonia.Media.Imaging.Bitmap(ImagePath + "hero-right.png"));
-            Resources.Add(ImgType.Skeleton, new Avalonia.Media.Imaging.Bitmap(ImagePath + "skeleton.png"));
-            Resources.Add(ImgType.Boss, new Avalonia.Media.Imaging.Bitmap(ImagePath + "boss.png"));
+            resources.Add(ImgType.Floor,    new Bitmap(imagePath + "floor.png"));
+            resources.Add(ImgType.Wall,     new Bitmap(imagePath + "wall.png"));
+            resources.Add(ImgType.HeroDown, new Bitmap(imagePath + "hero-down.png"));
+            resources.Add(ImgType.HeroUp,   new Bitmap(imagePath + "hero-up.png"));
+            resources.Add(ImgType.HeroLeft, new Bitmap(imagePath + "hero-left.png"));
+            resources.Add(ImgType.HeroRight,new Bitmap(imagePath + "hero-right.png"));
+            resources.Add(ImgType.Skeleton, new Bitmap(imagePath + "skeleton.png"));
+            resources.Add(ImgType.Boss,     new Bitmap(imagePath + "boss.png"));
         }
 
+        // The method is used to display player's status
         private void TextBlockDisplay()
         {
-            tb = new Avalonia.Controls.TextBlock();
+            tb = new TextBlock();
             tb.FontSize = 20;
-            //tb.Foreground = SolidColorBrush.Parse("#ffffff");
-            canvas.Children.Add(tb);
+            Canvas.Children.Add(tb);
             Canvas.SetTop(tb, 730);
             Canvas.SetLeft(tb, 10);
         }
 
         public void DrawImage(string imageName, ImgType type, int x, int y)
         {
-            Image image = new Avalonia.Controls.Image();
+            var image = new Image();
             if (imageName != null)
             {
                 Images.Add(imageName, image);
             }
-            image.Source = Resources[type];
-            Canvas.SetLeft(image, Left + x * PicSize);
-            Canvas.SetTop(image, Top + y * PicSize);
-            canvas.Children.Add(image);
+            image.Source = resources[type];
+            Canvas.SetLeft(image, left + x * PicSize);
+            Canvas.SetTop(image, top + y * PicSize);
+            Canvas.Children.Add(image);
         }
 
         public void DrawImage(Character ch, ImgType type)
@@ -83,6 +83,7 @@ namespace Wanderer
             DrawImage(ch.Id, type, ch.PosX, ch.PosY);
         }
 
+        // The method is separate because we don't need to keep map tiles images
         public void DrawMapImage(ImgType type, int x, int y)
         {
             DrawImage(null, type, x, y);
@@ -93,9 +94,9 @@ namespace Wanderer
             if (Images.ContainsKey(ch.Id))
             {
                 Image image = Images[ch.Id];
-                image.Source = Resources[type];
-                Canvas.SetLeft(image, Left + ch.PosX * PicSize);
-                Canvas.SetTop(image, Top + ch.PosY * PicSize);
+                image.Source = resources[type];
+                Canvas.SetLeft(image, left + ch.PosX * PicSize);
+                Canvas.SetTop(image, top + ch.PosY * PicSize);
             }
         }
 
@@ -103,7 +104,7 @@ namespace Wanderer
         {
             if (!(ch is Player) || !(ch is Boss))
             {
-                canvas.Children.Remove(Images[ch.Id]);
+                Canvas.Children.Remove(Images[ch.Id]);
                 Images.Remove(ch.Id);
             }
         }
@@ -115,7 +116,7 @@ namespace Wanderer
 
         public void GameOver()
         {
-            DrawCenterText("game over");
+            DrawCenterText("GAME OVER");
         }
 
         public void Loading()
@@ -123,16 +124,16 @@ namespace Wanderer
             DrawCenterText("LOADING...");
         }
 
+        // The following methods are used to display text through all the screen
         private void DrawCenterText(string str)
         {
             TextBlock textblock = CenterText(str, SetColor(255, 0, 0), Darken(156));
-            canvas.Children.Add(textblock);
+            Canvas.Children.Add(textblock);
         }
 
         private TextBlock CenterText(string text, SolidColorBrush foreground, SolidColorBrush background)
         {
             var output = new TextBlock();
-
             output.Text = text.ToUpper();
             output.TextAlignment = TextAlignment.Center;
             output.Foreground = foreground;

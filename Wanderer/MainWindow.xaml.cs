@@ -27,10 +27,9 @@ namespace Wanderer
             Timer.Tick += Timer_Tick;
             Timer.Start();
 
-
             // Generate a map
             Map Map = new Map(drawer, 10);
-            Map.GenerateMap(50);
+            Map.CreateMap(50);
 
             // Generate a GameControl
             gameControl = new GameControl(Map, drawer);
@@ -38,11 +37,7 @@ namespace Wanderer
             this.KeyDown += MainWindow_KeyDown;
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        // Keyboard input event handler
         private void MainWindow_KeyDown(object sender, KeyEventArgs e)
         {
             switch (e.Key)
@@ -60,11 +55,12 @@ namespace Wanderer
                     PlayerMoveToDirection(Character.Direction.South);
                     break;
                 case Key.Space:
-                    gameControl.BattlePlayer();
+                    gameControl.FightPlayer();
                     break;
             }
         }
 
+        // Simplification for keyboard input handler
         public void PlayerMoveToDirection(Character.Direction direction)
         {
             gameControl.DefinePathsForSkeletons();
@@ -72,12 +68,7 @@ namespace Wanderer
             gameControl.PlayerMove();
         }
 
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        // Sequence of actions during one time period
         private void Timer_Tick(object sender, EventArgs e)
         {
             gameControl.ShowStatus();

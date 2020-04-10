@@ -7,37 +7,36 @@ namespace Wanderer
     public class GameControl
     {
         public static int Level;
-        private bool levelPreparation = false;
-
         public Character Player = null;
         public Character Boss = null;
-        public List<Character> Skeletons = new List<Character>();
-
+        public List<Skeleton> Skeletons = new List<Skeleton>();
         private Map map;
-        private Drawer drawer; 
+        private Drawer drawer;
+        private bool levelPreparation = false;
 
         public GameControl(Map map, Drawer drawer)
         {
             Level = 1;
             this.map = map;
             this.drawer = drawer;
-            GenerateNewPlayer();
+            GeneratePlayer();
             GenerateBoss();
             GenerateSkeletons(3);
-        }
-
-        private void GenerateNewPlayer()
-        {
-            int x, y;
-            map.FindFreeCell(out x, out y);
-            Player = new Player(x, y, map, drawer, this, "Player");
-            drawer.DrawImage(Player, Drawer.ImgType.HeroDown);
         }
 
         private void GeneratePlayer()
         {
             int x, y;
-            map.FindFreeCell(out x, out y);
+            map.RandomFreeCell(out x, out y);
+            Player = new Player(x, y, map, drawer, this, "Player");
+            drawer.DrawImage(Player, Drawer.ImgType.HeroDown);
+        }
+
+        // Generate the player in next levels
+        private void PlacePlayer()
+        {
+            int x, y;
+            map.RandomFreeCell(out x, out y);
             Player.PosX = x;
             Player.PosY = y;
             drawer.DrawImage(Player, Drawer.ImgType.HeroDown);
@@ -47,24 +46,24 @@ namespace Wanderer
         {
             // Generate Skeletons 
             int x, y;
-            num = 1;
+            //num = 1;  //FOR TESTING PURPOSES
             for (int i = 0; i < num; i++)
             {
                 // Find an empty random cell in the map
                 do
                 {
-                    map.RandomCell(out x, out y);
+                    map.RandomFreeCell(out x, out y);
                 } while (CheckCollissions(x, y));
 
                 // Add Skeleton to the list of Skeletons
                 Skeletons.Add(new Skeleton(x, y, map, drawer, this, "Skeleton" + i.ToString()));
                 // Set Skeleton initial direction
-                while (!Skeletons[i].CheckDirection())
-                {
-                    if (!Skeletons[i].GenerateDirection()) break;
-                }
+                //while (!Skeletons[i].CheckDirection())
+                //{
+                //    if (!Skeletons[i].GenerateDirection()) break;
+                //}
                 drawer.DrawImage("Skeleton" + i.ToString(), Drawer.ImgType.Skeleton, x, y);
-                ((Skeleton)Skeletons[i]).NavigateEnemyToPlayer(Player, map);
+                (Skeletons[i]).NavigateEnemyToPlayer(Player, map);
             }
             
         }
@@ -75,7 +74,7 @@ namespace Wanderer
             int x, y;
             do
             {
-                map.RandomCell(out x, out y);
+                map.RandomFreeCell(out x, out y);
             } while (CheckCollissions(x, y));
             Boss = new Boss(x, y, map, drawer, this, "Boss");
             drawer.DrawImage(Boss, Drawer.ImgType.Boss);
@@ -87,17 +86,19 @@ namespace Wanderer
             Player.Move(Player.Dir);
         }
 
-        public void BattlePlayer()
+        // Fight between a player and an enemy
+        public void FightPlayer()
         {
-            Battle(Player, GetCharacter());
+            Fight(Player, GetCharacter());
         }
 
+        // Update status about the player
         public void ShowStatus()
         {
             drawer.UpdateStatusText(StatusText());
         }
 
-
+        
         private string StatusText()
         {
             return $"Level: {Level}\nHealth Points: {Player.CurrentHP} / {Player.MaxHP}";
@@ -121,12 +122,12 @@ namespace Wanderer
             }
             return collision;
         }
-
+        
         public void DefinePathsForSkeletons()
         {
             for (int i = 0; i < Skeletons.Count; i++)
             {
-                ((Skeleton)Skeletons[i]).NavigateEnemyToPlayer(Player, map);
+                (Skeletons[i]).NavigateEnemyToPlayer(Player, map);
             }
         }
 
@@ -134,9 +135,9 @@ namespace Wanderer
         {
             for (int i = 0; i < Skeletons.Count; i++)
             {
-                if (((Skeleton)Skeletons[i]).PathPositions.Count <= 0) ((Skeleton)Skeletons[i]).NavigateEnemyToPlayer(Player, map);
-                ((Skeleton)Skeletons[i]).SetDirection();
-                Skeletons[i].Move(Skeletons[i].Dir);
+                if (Skeletons[i].PathPositions.Count <= 0) 
+                    Skeletons[i].NavigateEnemyToPlayer(Player, map);
+                Skeletons[i].MoveSkeleton();
             }
         }
 
@@ -151,7 +152,8 @@ namespace Wanderer
             if (StandingNext(Boss)) return Boss;
             return null;
         }
-
+        
+        // Check if someone is standing next to the player
         private bool StandingNext(Character ch)
         {
             if (((Player.PosX == ch.PosX - 1) || (Player.PosX == ch.PosX + 1)) && (Player.PosY == ch.PosY)) return true;
@@ -159,21 +161,33 @@ namespace Wanderer
             else return false;
         }
 
+        public bool IsCellFree(int x, int y)
+        {
+            if (Player.PosX == x && Player.PosY == y) return false;
+            for (int i = 0; i < Skeletons.Count; i++)
+            {
+                if (Skeletons[i].PosX == x && Skeletons[i].PosY == y) return false;
+            }
+            if (Boss != null && Boss.PosX == x && Boss.PosY == y) return false;
+            return true;
+        }
+
+        // Check if player is facing towards the enemy
         private bool FacingTowardsEnemy(Character ch)
         {
-            if ((Player.Dir == Character.Direction.East) && (ch.PosX == Player.PosX + 1)) return true;
-            if ((Player.Dir == Character.Direction.West) && (ch.PosX == Player.PosX - 1)) return true;
+            if ((Player.Dir == Character.Direction.East)  && (ch.PosX == Player.PosX + 1)) return true;
+            if ((Player.Dir == Character.Direction.West)  && (ch.PosX == Player.PosX - 1)) return true;
             if ((Player.Dir == Character.Direction.North) && (ch.PosY == Player.PosY - 1)) return true;
             if ((Player.Dir == Character.Direction.South) && (ch.PosY == Player.PosY + 1)) return true;
             return false;
         }
 
-
-        private void Battle(Character Player, Character enemy)
+        // Fight between the player and the enemy
+        private void Fight(Character Player, Character enemy)
         {
             if (enemy == null) return;
             if (!FacingTowardsEnemy(enemy)) return; 
-            int SV = 0;
+            int SV = 0; // Strike Value used in the loop
             Random random = new Random();
             do
             {
@@ -191,7 +205,7 @@ namespace Wanderer
             if (enemy.CurrentHP <= 0 && enemy is Skeleton)
             {
                 enemy.RemoveImage();
-                Skeletons.Remove(enemy);
+                Skeletons.Remove((Skeleton)enemy);
             }
             if (enemy.CurrentHP <= 0 && enemy is Boss)
             {
@@ -200,7 +214,7 @@ namespace Wanderer
             }
         }
 
-        // Checks if conditions for next level were met and sets a new level
+        // Checks if conditions for the next level were met and sets a new level
         public void CheckStatus()
         {
             if (levelPreparation)
@@ -217,8 +231,8 @@ namespace Wanderer
             if (Player.CurrentHP <= 0)
             {
                 drawer.GameOver();
-                //TODO: Pause and a new game
             }
+            // TODO: Pause
         }
 
         private void CreateNewLevel()
@@ -227,11 +241,12 @@ namespace Wanderer
             levelPreparation = false;
             Skeletons.Clear();
             drawer.Images.Clear();
-            map.GenerateMap(58);
-            GenerateSkeletons(Level + 2);
+            map.CreateMap(58);
+            GenerateSkeletons(2 + Level);
             GenerateBoss();
-            GeneratePlayer();
+            PlacePlayer();
 
+            // Player's healing between levels
             Random random = new Random();
             int rnd = random.Next(1, 101);
             if (rnd <= 10) Player.CurrentHP = Player.MaxHP;

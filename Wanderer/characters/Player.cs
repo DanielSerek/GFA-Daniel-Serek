@@ -23,22 +23,22 @@ namespace Wanderer
             {
                 case Direction.West:
                     img_type = Drawer.ImgType.HeroLeft;
-                    Drawer.MoveImage(this, img_type);
+                    drawer.MoveImage(this, img_type);
                     break;
 
                 case Direction.East:
                     img_type = Drawer.ImgType.HeroRight;
-                    Drawer.MoveImage(this, img_type);
+                    drawer.MoveImage(this, img_type);
                     break;
 
                 case Direction.North:
                     img_type = Drawer.ImgType.HeroUp;
-                    Drawer.MoveImage(this, img_type);
+                    drawer.MoveImage(this, img_type);
                     break;
 
                 case Direction.South:
                     img_type = Drawer.ImgType.HeroDown;
-                    Drawer.MoveImage(this, img_type);
+                    drawer.MoveImage(this, img_type);
                     break;
             }
 
