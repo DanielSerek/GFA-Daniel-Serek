@@ -10,6 +10,7 @@ namespace Wanderer
         public Character Player = null;
         public Character Boss = null;
         public List<Skeleton> Skeletons = new List<Skeleton>();
+        public List<Loot> Loots = new List<Loot>();
         private Map map;
         private Drawer drawer;
         private bool levelPreparation = false;
@@ -36,7 +37,13 @@ namespace Wanderer
         private void PlacePlayer()
         {
             int x, y;
-            map.RandomFreeCell(out x, out y);
+            Player.PosX = -1;
+            Player.PosY = -1;
+            // Find an empty random cell in the map
+            do
+            {
+                map.RandomFreeCell(out x, out y);
+            } while (CheckCollissions(x, y));
             Player.PosX = x;
             Player.PosY = y;
             drawer.DrawImage(Player, Drawer.ImgType.HeroDown);
@@ -65,7 +72,6 @@ namespace Wanderer
                 drawer.DrawImage("Skeleton" + i.ToString(), Drawer.ImgType.Skeleton, x, y);
                 (Skeletons[i]).NavigateEnemyToPlayer(Player, map);
             }
-            
         }
 
         private void GenerateBoss()
@@ -86,18 +92,39 @@ namespace Wanderer
             Player.Move(Player.Dir);
         }
 
-        // Fight between a player and an enemy
-        public void FightPlayer()
+        // Player attacks an enemy
+        public void AttackEnemy()
         {
             Fight(Player, GetCharacter());
         }
+
+        // Enemy attacks a player
+        public void AttackPlayer()
+        {
+            Fight(GetCharacter(), Player);
+        }
+
+        // If a player is close to the boss, he attacks player
+        public void BossAttacks()
+        {
+            if (StandingNext((Character)Boss))
+            {
+                Fight(Boss, Player);
+            }
+            
+            if (Skeletons.Count < 1)
+            {
+                Boss.NavigateEnemyToPlayer(Player, map);
+                ((Boss)Boss).MoveBoss();
+            }
+        }
+
 
         // Update status about the player
         public void ShowStatus()
         {
             drawer.UpdateStatusText(StatusText());
         }
-
         
         private string StatusText()
         {
@@ -108,19 +135,13 @@ namespace Wanderer
         // Check free place in the map, not to create two Skeletons on the same tile
         private bool CheckCollissions(int x, int y)
         {
-            bool collision = false;
             for (int i = 0; i < Skeletons.Count; i++)
             {
-                if (Skeletons[i].PosX == x && Skeletons[i].PosY == y)
-                {
-                    collision = true;
-                }
-                if (Player.PosX == x && Player.PosY == y)
-                {
-                    collision = true;
-                }
+                if (Skeletons[i].PosX == x && Skeletons[i].PosY == y) return true;
             }
-            return collision;
+            if (Player.PosX == x && Player.PosY == y) return true;
+            if (Boss != null && (Boss.PosX == x && Boss.PosY == y)) return true;
+            return false;
         }
         
         public void DefinePathsForSkeletons()
@@ -138,6 +159,7 @@ namespace Wanderer
                 if (Skeletons[i].PathPositions.Count <= 0) 
                     Skeletons[i].NavigateEnemyToPlayer(Player, map);
                 Skeletons[i].MoveSkeleton();
+                if (StandingNext(Skeletons[i])) AttackPlayer(); //TODO: Create separate methods = Attack player, Attack enemy
             }
         }
 
@@ -157,7 +179,7 @@ namespace Wanderer
         private bool StandingNext(Character ch)
         {
             if (((Player.PosX == ch.PosX - 1) || (Player.PosX == ch.PosX + 1)) && (Player.PosY == ch.PosY)) return true;
-            if (((Player.PosY == ch.PosY - 1) || (Player.PosY == ch.PosY + 1)) && (Player.PosX == ch.PosX)) return true;
+            else if (((Player.PosY == ch.PosY - 1) || (Player.PosY == ch.PosY + 1)) && (Player.PosX == ch.PosX)) return true;
             else return false;
         }
 
@@ -183,36 +205,53 @@ namespace Wanderer
         }
 
         // Fight between the player and the enemy
-        private void Fight(Character Player, Character enemy)
+        private void Fight(Character attacker, Character defender)
         {
-            if (enemy == null) return;
-            if (!FacingTowardsEnemy(enemy)) return; 
-            int SV = 0; // Strike Value used in the loop
+            if (defender == null) return;
+            if (attacker is Player && !FacingTowardsEnemy(defender)) return;
+            int SV = 0; // Strike Value
             Random random = new Random();
-            do
+         
+            // Strike by the attacker
+            SV = attacker.SP + 2 * random.Next(7);
+            if (SV > defender.DP)
             {
-                // Strike by a Player
-                SV = Player.SP + 2 * random.Next(7);
-                if (SV > enemy.DP) enemy.CurrentHP -= SV - enemy.DP;
-                if (enemy.CurrentHP <= 0) break;
-
-                // Strike by an enemy
-                SV = enemy.SP + 2 * random.Next(7);
-                if (SV > Player.DP) Player.CurrentHP -= SV - Player.DP;
-            } while (Player.CurrentHP > 0 && enemy.CurrentHP > 0);
-
-            if (Player.CurrentHP <= 0) Player.RemoveImage();
-            if (enemy.CurrentHP <= 0 && enemy is Skeleton)
-            {
-                enemy.RemoveImage();
-                Skeletons.Remove((Skeleton)enemy);
+                // if (attacker is Skeleton || attacker is Boss) drawer.RedScreen();
+                defender.CurrentHP -= SV - defender.DP;
             }
-            if (enemy.CurrentHP <= 0 && enemy is Boss)
+
+            if (defender.CurrentHP < 1 && defender is Player) Player.RemoveImage();
+            if (defender.CurrentHP < 1 && defender is Skeleton)
             {
-                enemy.RemoveImage();
+                defender.RemoveImage();
+                RenderReward(defender);
+                Skeletons.Remove((Skeleton)defender);
+            }
+            if (defender.CurrentHP < 1 && defender is Boss)
+            {
+                defender.RemoveImage();
                 Boss = null;
             }
         }
+
+        private void RenderReward(Character defender)
+        {
+            Random random = new Random();
+            int rnd = random.Next(100);
+            if(rnd < 100)
+            {
+                Loots.Add(new Loot(new Position(defender.PosX, defender.PosY), "firstAid"));
+                drawer.DrawImage("Loot" + defender.Id.Substring(defender.Id.Length - 1), Drawer.ImgType.FirstAid, defender.PosX, defender.PosY);
+            }
+        }
+
+        //public void GrabLoot()
+        //{
+        //    if(Player.PosX == Loots[i].Position)
+        //    {
+        //        do...
+        //    }
+        //}
 
         // Checks if conditions for the next level were met and sets a new level
         public void CheckStatus()
@@ -222,7 +261,7 @@ namespace Wanderer
                 CreateNewLevel();
                 return;
             }
-            if (Skeletons.Count == 0 && Boss == null)
+            if (Skeletons.Count < 1 && Boss == null)
             {
                 drawer.Loading();
                 levelPreparation = true;
@@ -238,6 +277,7 @@ namespace Wanderer
         private void CreateNewLevel()
         {
             Level++;
+            MainWindow.GameSpeed *= 0.9; //Makes movemment of skeletons faster
             levelPreparation = false;
             Skeletons.Clear();
             drawer.Images.Clear();
@@ -250,8 +290,8 @@ namespace Wanderer
             Random random = new Random();
             int rnd = random.Next(1, 101);
             if (rnd <= 10) Player.CurrentHP = Player.MaxHP;
-            if (rnd > 10 && rnd <= 40) Player.CurrentHP += (Player.MaxHP - Player.CurrentHP) / 3;
-            if (rnd > 50) Player.CurrentHP += (Player.MaxHP - Player.CurrentHP) / 10;
+            if (rnd > 10 && rnd <= 40) Player.CurrentHP += (Player.MaxHP - Player.CurrentHP) / 2;
+            if (rnd > 50) Player.CurrentHP += (Player.MaxHP - Player.CurrentHP) / 5;
         }
     }
 }

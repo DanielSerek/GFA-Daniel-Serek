@@ -4,8 +4,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="0" d:DesignHeight="0"
         CanResize="false"
-        MaxWidth="720" MaxHeight="800"
-        MinWidth="720" MinHeight="800"
+        MaxWidth="600" MaxHeight="680"
+        MinWidth="600" MinHeight="680"
         x:Class="Wanderer.MainWindow"
         Title="Wanderer">
   <Grid>

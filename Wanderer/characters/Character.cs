@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Wanderer
 {
@@ -16,12 +17,21 @@ namespace Wanderer
         public int PosY;
         public Direction Dir;
         public int MaxHP;
-        public int CurrentHP;
+        public int CurrentHP {
+            get { return hp; }
+            set 
+            {
+                if (value < 0) hp = 0;
+                else hp = value;
+            } 
+        }
+        public List<Position> PathPositions;
         public int DP;
         public int SP;
         protected Drawer drawer;
         protected GameControl gameControl;
         private Map map;
+        private int hp;
 
         public string Id { get; private set; }
 
@@ -52,6 +62,23 @@ namespace Wanderer
             else return false;
         }
 
+        public void SetDirection()
+        {
+
+            if (PathPositions.Count < 1) return;
+            if (PathPositions[0].PosX > PosX) Dir = Direction.East;
+            if (PathPositions[0].PosX < PosX) Dir = Direction.West;
+            if (PathPositions[0].PosY > PosY) Dir = Direction.South;
+            if (PathPositions[0].PosY < PosY) Dir = Direction.North;
+            PathPositions.RemoveAt(0);
+        }
+
+        public void NavigateEnemyToPlayer(Character player, Map map)
+        {
+            PathFinder pathFinder = new PathFinder();
+            PathPositions = pathFinder.PathFinding(PosX, PosY, player.PosX, player.PosY, map);
+        }
+
         // Checks if the tile is empty
         private bool CheckTileOccupancy(int x, int y)
         {
@@ -63,7 +90,7 @@ namespace Wanderer
         public bool RemoveImage()
         {
             bool alive = true;
-            if (CurrentHP <= 0)
+            if (CurrentHP < 1)
             {
                 CurrentHP = 0;
                 drawer.RemoveImage(this);

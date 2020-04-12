@@ -8,10 +8,12 @@ namespace Wanderer
 {
     public class MainWindow : Window
     {
+        public static double GameSpeed = 1;
         DispatcherTimer Timer;
         private Drawer drawer;
         private Canvas canvas;
         private GameControl gameControl;
+        
 
 
         public MainWindow()
@@ -20,10 +22,10 @@ namespace Wanderer
 
             // Create a canvas
             canvas = this.Get<Canvas>("canvas");
-            drawer = new Drawer(canvas, 72, 0, 0);
+            drawer = new Drawer(canvas, 60, 0, 0);
 
             Timer = new DispatcherTimer();
-            Timer.Interval = TimeSpan.FromSeconds(0.5);
+            Timer.Interval = TimeSpan.FromSeconds(GameSpeed);
             Timer.Tick += Timer_Tick;
             Timer.Start();
 
@@ -55,7 +57,7 @@ namespace Wanderer
                     PlayerMoveToDirection(Character.Direction.South);
                     break;
                 case Key.Space:
-                    gameControl.FightPlayer();
+                    gameControl.AttackEnemy();
                     break;
             }
         }
@@ -66,14 +68,25 @@ namespace Wanderer
             gameControl.DefinePathsForSkeletons();
             gameControl.Player.Dir = direction;
             gameControl.PlayerMove();
+            //gameControl.GrabLoot();
         }
 
         // Sequence of actions during one time period
         private void Timer_Tick(object sender, EventArgs e)
         {
-            gameControl.ShowStatus();
-            gameControl.CheckStatus();
-            gameControl.MoveSkeletons();
+            try
+            {
+                gameControl.CheckStatus();
+                gameControl.ShowStatus();
+                gameControl.MoveSkeletons();
+                gameControl.BossAttacks();
+                Timer.Interval = TimeSpan.FromSeconds(GameSpeed);
+            } 
+            catch (Exception m)
+            {
+                string str = m.Message;
+            }
+            
         }
 
         private void InitializeComponent()

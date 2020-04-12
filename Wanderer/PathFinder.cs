@@ -84,10 +84,23 @@ namespace Wanderer
                     }
                 }
             }
-            positions = new List<Position>();
-            foreach (var item in closedList)
+
+            PathFinder currentTile;
+            List<PathFinder> ReversedSteps = new List<PathFinder>();
+            currentTile = closedList[closedList.Count - 1];
+            ReversedSteps.Add(currentTile);
+
+            while (!(currentTile.X == currentX && currentTile.Y == currentY))
             {
-                positions.Add(new Position(item.X, item.Y));
+                currentTile = currentTile.Parent;
+                ReversedSteps.Add(currentTile.Parent);
+            } 
+            ReversedSteps.Reverse();
+
+            positions = new List<Position>();
+            foreach (var item in ReversedSteps)
+            {
+                if(item != null) positions.Add(new Position(item.X, item.Y));
             }
             positions.RemoveAt(0);
             return positions;

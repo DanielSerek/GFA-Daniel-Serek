@@ -12,5 +12,18 @@ namespace Wanderer.characters
             DP = GameControl.Level / 2 * random.Next(1, 7) + random.Next(1, 7) / 2;
             SP = GameControl.Level * random.Next(1, 7) + GameControl.Level;
         }
+
+        public override void Move(Direction dir)
+        {
+            base.Move(dir);
+            Drawer.ImgType img_type = Drawer.ImgType.Boss;
+            drawer.MoveImage(this, img_type);
+        }
+
+        public void MoveBoss()
+        {
+            SetDirection();
+            Move(Dir);
+        }
     }
 }
