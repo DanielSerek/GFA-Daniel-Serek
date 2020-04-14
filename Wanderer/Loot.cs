@@ -7,12 +7,12 @@ namespace Wanderer
     public class Loot
     {
         public Position Position;
-        public string Type;
+        public string Id;
 
-        public Loot(Position position, string type)
+        public Loot(Position position, string id)
         {
             Position = position;
-            Type = type;
+            Id = id;
         }
     }
 }

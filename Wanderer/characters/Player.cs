@@ -4,7 +4,7 @@ namespace Wanderer
 {
     public class Player : Character
     {
-        public Player(int posX, int posY, Map map, Drawer drawer, GameControl gameControl, string id) : base(posX, posY, map, drawer, gameControl, id)
+        public Player(Position position, Map map, Drawer drawer, GameControl gameControl, string id) : base(position, map, drawer, gameControl, id)
         {
             Random random = new Random();
             MaxHP = 20 + 3 * random.Next(1, 7);

@@ -16,11 +16,11 @@ namespace Wanderer
         private int H;  //H score is the estimated distance from the destination (calculated as the city block distance) 
         private PathFinder Parent;
 
-        public List<Position> PathFinding(int currentX, int currentY, int playerX, int playerY, Map map)
+        public List<Position> PathFinding(Position currentPos, Position playerPos, Map map)
         {
             PathFinder current = null;
-            PathFinder start = new PathFinder { X = currentX, Y = currentY };
-            PathFinder target = new PathFinder { X = playerX, Y = playerY };
+            PathFinder start = new PathFinder { X = currentPos.X, Y = currentPos.Y };
+            PathFinder target = new PathFinder { X = playerPos.X, Y = playerPos.Y };
             List<PathFinder> openList = new List<PathFinder>();
             List<PathFinder> closedList = new List<PathFinder>();
             int g = 0; // number of steps needed to find the player
@@ -41,7 +41,7 @@ namespace Wanderer
                 openList.Remove(current);
 
                 // if we added the destination to the closed list, we've found a path
-                if (closedList.FirstOrDefault(l => l.X == playerX && l.Y == playerY) != null)
+                if (closedList.FirstOrDefault(l => l.X == playerPos.X && l.Y == playerPos.Y) != null)
                 {
                     //ADD TO CLOSED LIST???
                     break;
@@ -53,13 +53,11 @@ namespace Wanderer
                 foreach (var adjacentSquare in adjacentSquares)
                 {
                     // if this adjacent square is already in the closed list, ignore it
-                    if (closedList.FirstOrDefault(l => l.X == adjacentSquare.X
-                            && l.Y == adjacentSquare.Y) != null)
+                    if (closedList.FirstOrDefault(l => l.X == adjacentSquare.X && l.Y == adjacentSquare.Y) != null)
                         continue;
 
                     // if it's not in the open list...
-                    if (openList.FirstOrDefault(l => l.X == adjacentSquare.X
-                            && l.Y == adjacentSquare.Y) == null)
+                    if (openList.FirstOrDefault(l => l.X == adjacentSquare.X && l.Y == adjacentSquare.Y) == null)
                     {
                         // compute its score, set the parent
                         adjacentSquare.G = g;
@@ -90,7 +88,7 @@ namespace Wanderer
             currentTile = closedList[closedList.Count - 1];
             ReversedSteps.Add(currentTile);
 
-            while (!(currentTile.X == currentX && currentTile.Y == currentY))
+            while (!(currentTile.X == currentPos.X && currentTile.Y == currentPos.Y)) //Does it work??
             {
                 currentTile = currentTile.Parent;
                 ReversedSteps.Add(currentTile.Parent);

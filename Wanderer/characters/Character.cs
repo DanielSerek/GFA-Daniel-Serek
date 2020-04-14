@@ -13,8 +13,7 @@ namespace Wanderer
             East
         }
 
-        public int PosX;
-        public int PosY;
+        public Position Position;
         public Direction Dir;
         public int MaxHP;
         public int CurrentHP {
@@ -35,11 +34,10 @@ namespace Wanderer
 
         public string Id { get; private set; }
 
-        public Character(int posX, int posY, Map map, Drawer drawer, GameControl gameControl, string id)
+        public Character(Position position, Map map, Drawer drawer, GameControl gameControl, string id)
         {
             Id = id;
-            PosX = posX;
-            PosY = posY;
+            Position = position;
             this.map = map;
             this.drawer = drawer;
             this.gameControl = gameControl;
@@ -47,18 +45,18 @@ namespace Wanderer
 
         public virtual void Move(Direction dir)
         {
-            if (dir == Direction.North && CheckTileOccupancy(PosX, PosY - 1)) PosY--;
-            if (dir == Direction.South && CheckTileOccupancy(PosX, PosY + 1)) PosY++;
-            if (dir == Direction.West  && CheckTileOccupancy(PosX - 1, PosY)) PosX--;
-            if (dir == Direction.East  && CheckTileOccupancy(PosX + 1, PosY)) PosX++;
+            if (dir == Direction.North && CheckTileOccupancy(Position.X, Position.Y - 1)) Position.Y--;
+            if (dir == Direction.South && CheckTileOccupancy(Position.X, Position.Y + 1)) Position.Y++;
+            if (dir == Direction.West  && CheckTileOccupancy(Position.X - 1, Position.Y)) Position.X--;
+            if (dir == Direction.East  && CheckTileOccupancy(Position.X + 1, Position.Y)) Position.X++;
         }
 
         public bool CheckDirection()
         {
-            if (Dir == Direction.North      && CheckTileOccupancy(PosX, PosY - 1)) return true;
-            else if (Dir == Direction.South && CheckTileOccupancy(PosX, PosY + 1)) return true;
-            else if (Dir == Direction.West  && CheckTileOccupancy(PosX - 1, PosY)) return true;
-            else if (Dir == Direction.East  && CheckTileOccupancy(PosX + 1, PosY)) return true;
+            if (Dir == Direction.North      && CheckTileOccupancy(Position.X, Position.Y - 1)) return true;
+            else if (Dir == Direction.South && CheckTileOccupancy(Position.X, Position.Y + 1)) return true;
+            else if (Dir == Direction.West  && CheckTileOccupancy(Position.X - 1, Position.Y)) return true;
+            else if (Dir == Direction.East  && CheckTileOccupancy(Position.X + 1, Position.Y)) return true;
             else return false;
         }
 
@@ -66,24 +64,24 @@ namespace Wanderer
         {
 
             if (PathPositions.Count < 1) return;
-            if (PathPositions[0].PosX > PosX) Dir = Direction.East;
-            if (PathPositions[0].PosX < PosX) Dir = Direction.West;
-            if (PathPositions[0].PosY > PosY) Dir = Direction.South;
-            if (PathPositions[0].PosY < PosY) Dir = Direction.North;
+            if (PathPositions[0].X > Position.X) Dir = Direction.East;
+            if (PathPositions[0].X < Position.X) Dir = Direction.West;
+            if (PathPositions[0].Y > Position.Y) Dir = Direction.South;
+            if (PathPositions[0].Y < Position.Y) Dir = Direction.North;
             PathPositions.RemoveAt(0);
         }
 
         public void NavigateEnemyToPlayer(Character player, Map map)
         {
             PathFinder pathFinder = new PathFinder();
-            PathPositions = pathFinder.PathFinding(PosX, PosY, player.PosX, player.PosY, map);
+            PathPositions = pathFinder.PathFinding(Position, player.Position, map);
         }
 
         // Checks if the tile is empty
         private bool CheckTileOccupancy(int x, int y)
         {
             if (map.GetTile(x, y) == Map.TileType.Wall) return false;
-            if (!gameControl.IsCellFree(x, y)) return false;
+            if (!gameControl.IsCellFree(new Position(x, y))) return false;
             return true;
         }
 

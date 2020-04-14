@@ -23,7 +23,9 @@ namespace Wanderer
             HeroRight,
             Skeleton,
             Boss,
-            FirstAid
+            FirstAid,
+            Armour,
+            Weapon
         }
 
         public Canvas Canvas;
@@ -38,6 +40,7 @@ namespace Wanderer
         // Variables used in RedScreen method
         private byte opacity;
         private bool redDown;
+        public bool AvaloniaRedDownLock; // Not to display more images on Canvas
         Rectangle rectangle = new Rectangle()
         {
             Width = 720,
@@ -56,6 +59,8 @@ namespace Wanderer
             Images = new Dictionary<string, Image>();
             Load();
             TextBlockDisplay();
+            Timer.Tick += Timer_RedColor;
+            Timer.Interval = TimeSpan.FromMilliseconds(1);
         }
 
         // Load all pictures into resources Dictionary
@@ -70,6 +75,8 @@ namespace Wanderer
             resources.Add(ImgType.Skeleton, new Bitmap(imagePath + "skeleton.png"));
             resources.Add(ImgType.Boss,     new Bitmap(imagePath + "boss.png"));
             resources.Add(ImgType.FirstAid, new Bitmap(imagePath + "firstaid.png"));
+            resources.Add(ImgType.Armour,   new Bitmap(imagePath + "armour.png"));
+            resources.Add(ImgType.Weapon, new Bitmap(imagePath + "weapon.png"));
         }
 
         // The method is used to display player's status
@@ -82,7 +89,7 @@ namespace Wanderer
             Canvas.SetLeft(tb, 10);
         }
 
-        public void DrawImage(string imageName, ImgType type, int x, int y)
+        public void DrawImage(string imageName, ImgType type, Position pos) 
         {
             var image = new Image();
             if (imageName != null)
@@ -90,20 +97,20 @@ namespace Wanderer
                 Images.Add(imageName, image);
             }
             image.Source = resources[type];
-            Canvas.SetLeft(image, left + x * PicSize);
-            Canvas.SetTop(image, top + y * PicSize);
+            Canvas.SetLeft(image, left + pos.X * PicSize);
+            Canvas.SetTop(image, top + pos.Y * PicSize);
             Canvas.Children.Add(image);
         }
 
         public void DrawImage(Character ch, ImgType type)
         {
-            DrawImage(ch.Id, type, ch.PosX, ch.PosY);
+            DrawImage(ch.Id, type, ch.Position);
         }
 
         // The method is separate because we don't need to keep map tiles images
-        public void DrawMapImage(ImgType type, int x, int y)
+        public void DrawMapImage(ImgType type, Position pos)
         {
-            DrawImage(null, type, x, y);
+            DrawImage(null, type, pos);
         }
 
         public void MoveImage(Character ch, ImgType type)
@@ -112,8 +119,8 @@ namespace Wanderer
             {
                 Image image = Images[ch.Id];
                 image.Source = resources[type];
-                Canvas.SetLeft(image, left + ch.PosX * PicSize);
-                Canvas.SetTop(image, top + ch.PosY * PicSize);
+                Canvas.SetLeft(image, left + ch.Position.X * PicSize);
+                Canvas.SetTop(image, top + ch.Position.Y * PicSize);
             }
         }
 
@@ -123,6 +130,15 @@ namespace Wanderer
             {
                 Canvas.Children.Remove(Images[ch.Id]);
                 Images.Remove(ch.Id);
+            }
+        }
+
+        public void RemoveImage(Loot l)
+        {
+            if (Images.ContainsKey(l.Id))
+            {
+                Canvas.Children.Remove(Images[l.Id]);
+                Images.Remove(l.Id);
             }
         }
 
@@ -143,27 +159,30 @@ namespace Wanderer
 
         public void RedScreen()
         {
-            Timer.Interval = TimeSpan.FromMilliseconds(10);
             Timer.Start();
-            Timer.Tick += Timer_RedColor;
+            if(!AvaloniaRedDownLock)
+            {
+                Canvas.Children.Add(rectangle);
+                AvaloniaRedDownLock = true;
+            }
             Canvas.SetLeft(rectangle, 0);
             Canvas.SetTop(rectangle, 0);
-            Canvas.Children.Add(rectangle);
             if (opacity < 5) return;
         }
         private void Timer_RedColor(object sender, EventArgs e)
         {
             try
             {
-                if (opacity < 150 && !redDown) opacity += 5;
-                if (opacity >= 150) redDown = true;
+                if (opacity < 120 && !redDown) opacity += 10;
+                if (opacity >= 120) redDown = true;
                 if (opacity > 0 && redDown)
                 {
-                    opacity -= 5;
-                    if (opacity <= 5)
+                    opacity -= 10;
+                    if (opacity <= 10)
                     {
                         opacity = 0;
                         redDown = false;
+                        rectangle.Fill = new SolidColorBrush(new Color(opacity, 255, 0, 0));
                         Timer.Stop();
                         return;
                     }

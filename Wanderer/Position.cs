@@ -6,13 +6,13 @@ namespace Wanderer
 {
     public class Position
     {
-        public int PosX;
-        public int PosY;
+        public int X;
+        public int Y;
 
-        public Position(int posX, int posY)
+        public Position(int x, int y)
         {
-            PosX = posX;
-            PosY = posY;
+            X = x;
+            Y = y;
         }
     }
 }

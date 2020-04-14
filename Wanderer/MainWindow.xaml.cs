@@ -9,7 +9,7 @@ namespace Wanderer
     public class MainWindow : Window
     {
         public static double GameSpeed = 1;
-        DispatcherTimer Timer;
+        public static DispatcherTimer Timer;
         private Drawer drawer;
         private Canvas canvas;
         private GameControl gameControl;
@@ -68,7 +68,7 @@ namespace Wanderer
             gameControl.DefinePathsForSkeletons();
             gameControl.Player.Dir = direction;
             gameControl.PlayerMove();
-            //gameControl.GrabLoot();
+            gameControl.GrabLoot();
         }
 
         // Sequence of actions during one time period

@@ -30,14 +30,13 @@ namespace Wanderer
         public void CreateMap(int wallsPercentage)
         {
             int chf = 0; // Provides information how many tiles have been flooded
-            // Generate new maps until the number of flooded tiles equals floor tiles
+            // Generate new maps until the number of flooded tiles floor tiles
             do
             {
                 floorCount = 0;
                 floorCount = GenerateRandomMap(wallsPercentage);
-                int i, j = 0;
-                RandomFreeCell(out i, out j);
-                FloodFill(i, j);
+                Position pos = RandomFreeCell();
+                FloodFill(pos);
                 chf = CheckFloodFill();
             } while (chf != floorCount);
             ChangeFloodedToFloor();
@@ -83,8 +82,8 @@ namespace Wanderer
             {
                 for (int j = 0; j < MapSize; j++)
                 {
-                    if (GameMap[i, j] == TileType.Wall) drawer.DrawMapImage(Drawer.ImgType.Wall, i, j);
-                    else drawer.DrawMapImage(Drawer.ImgType.Floor, i, j);
+                    if (GameMap[i, j] == TileType.Wall) drawer.DrawMapImage(Drawer.ImgType.Wall, new Position(i,j));
+                    else drawer.DrawMapImage(Drawer.ImgType.Floor, new Position(i,j));
                 }
             }
         }
@@ -114,34 +113,54 @@ namespace Wanderer
             return count;
         }
 
-        void FloodFill(int x, int y)
+        void FloodFill(Position pos)
         {
             // Base cases 
-            if (x < 0 || x >= MapSize ||
-                y < 0 || y >= MapSize)
+            if (pos.X < 0 || pos.X >= MapSize ||
+                pos.Y < 0 || pos.Y >= MapSize)
                 return;
-            if (GameMap[x, y] == TileType.Flooded || GameMap[x, y] == TileType.Wall)
+            if (GameMap[pos.X, pos.Y] == TileType.Flooded || GameMap[pos.X, pos.Y] == TileType.Wall)
                 return;
 
             // Replace the tile type at (x, y) 
-            GameMap[x, y] = TileType.Flooded;
+            GameMap[pos.X, pos.Y] = TileType.Flooded;
 
             // Recur for north, east, south and west 
-            FloodFill(x + 1, y);
-            FloodFill(x - 1, y);
-            FloodFill(x, y + 1);
-            FloodFill(x, y - 1);
+            FloodFill(new Position(pos.X + 1, pos.Y));
+            FloodFill(new Position(pos.X - 1, pos.Y));
+            FloodFill(new Position(pos.X, pos.Y + 1));
+            FloodFill(new Position(pos.X, pos.Y - 1));
         }
              
         //Generate a random free cell 
-        public void RandomFreeCell(out int i, out int j)
+        public Position RandomFreeCell()
         {
+            int i, j;
             Random random = new Random();
             do
             {
                 i = random.Next(1, MapSize);
                 j = random.Next(1, MapSize);
             } while (GetTile(i, j) != TileType.Floor);
+            return new Position(i, j);
         }
+
+        //private void IterateThroughMap(MapIter handleCell)
+        //{
+        //    for (int i = 0; i < Size.X; i++)
+        //    {
+        //        for (int j = 0; j < Size.Y; j++)
+        //        {
+        //            Point pos = new Point(i, j);
+        //            handleCell(pos);
+        //        }
+        //    }
+        //}
+
+        //IterateThroughMap((pos) => {
+        //    if (rand.Next() % 100 < wallProbability) SetTile(pos, TileType.Wall);
+        //    else SetTile(pos, TileType.Floor);
+        //    if (!CheckMapContinuity()) SetTile(pos, TileType.Floor);
+        //});
     }
 }
