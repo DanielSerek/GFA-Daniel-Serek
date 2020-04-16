@@ -13,8 +13,7 @@ namespace Wanderer
         private Drawer drawer;
         private Canvas canvas;
         private GameControl gameControl;
-        
-
+        private bool paused;
 
         public MainWindow()
         {
@@ -35,15 +34,19 @@ namespace Wanderer
 
             // Generate a GameControl
             gameControl = new GameControl(Map, drawer);
-
+            
             this.KeyDown += MainWindow_KeyDown;
         }
 
         // Keyboard input event handler
         private void MainWindow_KeyDown(object sender, KeyEventArgs e)
         {
+            if (gameControl.Player == null) return;
             switch (e.Key)
             {
+                case Key.Escape:
+                    PauseGame();
+                    break;
                 case Key.Left:
                     PlayerMoveToDirection(Character.Direction.West);
                     break;
@@ -65,10 +68,14 @@ namespace Wanderer
         // Simplification for keyboard input handler
         public void PlayerMoveToDirection(Character.Direction direction)
         {
-            gameControl.DefinePathsForSkeletons();
-            gameControl.Player.Dir = direction;
-            gameControl.PlayerMove();
-            gameControl.GrabLoot();
+            if (!paused)
+            {
+                gameControl.DefinePathsForSkeletons();
+                gameControl.Player.Dir = direction;
+                gameControl.PlayerMove();
+                gameControl.GrabLoot();
+                gameControl.GetSkeletonInfo();
+            }
         }
 
         // Sequence of actions during one time period
@@ -77,6 +84,7 @@ namespace Wanderer
             try
             {
                 gameControl.CheckStatus();
+                if (gameControl.Player == null) return;
                 gameControl.ShowStatus();
                 gameControl.MoveSkeletons();
                 gameControl.BossAttacks();
@@ -92,6 +100,14 @@ namespace Wanderer
         private void InitializeComponent()
         {
             AvaloniaXamlLoader.Load(this);
+        }
+
+        private void PauseGame()
+        {
+            paused = !paused;
+            drawer.Pause(paused);
+            if (paused) Timer.Stop();
+            else Timer.Start();
         }
     }
 }

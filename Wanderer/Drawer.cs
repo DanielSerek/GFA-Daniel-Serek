@@ -15,27 +15,27 @@ namespace Wanderer
     {
         public enum ImgType
         {
+            SkeletonDown, SkeletonUp, SkeletonLeft, SkeletonRight,
+            BossDown, BossUp, BossLeft, BossRight, 
+            HeroDown, HeroUp, HeroLeft, HeroRight,
             Floor,
             Wall,
-            HeroDown,
-            HeroUp,
-            HeroLeft,
-            HeroRight,
-            Skeleton,
-            Boss,
             FirstAid,
             Armour,
-            Weapon
+            Weapon,
+            Potion
         }
 
         public Canvas Canvas;
         public int PicSize = 72;
         public Dictionary<string, Image> Images; // Dictionary is used to call different Image objects
+        private Dictionary<string, Image> sidebarImages;
+        public Dictionary<string, TextBlock> TextBlocks; 
+        public bool SidebarImagesLoaded;
         private int left;
         private int top;
         private Dictionary<ImgType, Bitmap> resources;
         private static string imagePath = @"../../../img/";
-        private TextBlock tb;
 
         // Variables used in RedScreen method
         private byte opacity;
@@ -43,10 +43,11 @@ namespace Wanderer
         public bool AvaloniaRedDownLock; // Not to display more images on Canvas
         Rectangle rectangle = new Rectangle()
         {
-            Width = 720,
-            Height = 800,
+            Width = 600,
+            Height = 600,
         };
         DispatcherTimer Timer = new DispatcherTimer();
+        TextBlock PausedTextBlock;
 
 
         public Drawer(Canvas canvas, int picsize, int left, int top)
@@ -57,8 +58,9 @@ namespace Wanderer
             this.top = top;
             resources = new Dictionary<ImgType, Bitmap>();
             Images = new Dictionary<string, Image>();
+            sidebarImages = new Dictionary<string, Image>();
+            TextBlocks = new Dictionary<string, TextBlock>();
             Load();
-            TextBlockDisplay();
             Timer.Tick += Timer_RedColor;
             Timer.Interval = TimeSpan.FromMilliseconds(1);
         }
@@ -66,27 +68,35 @@ namespace Wanderer
         // Load all pictures into resources Dictionary
         private void Load()
         {
-            resources.Add(ImgType.Floor,    new Bitmap(imagePath + "floor.png"));
-            resources.Add(ImgType.Wall,     new Bitmap(imagePath + "wall.png"));
-            resources.Add(ImgType.HeroDown, new Bitmap(imagePath + "hero-down.png"));
-            resources.Add(ImgType.HeroUp,   new Bitmap(imagePath + "hero-up.png"));
-            resources.Add(ImgType.HeroLeft, new Bitmap(imagePath + "hero-left.png"));
-            resources.Add(ImgType.HeroRight,new Bitmap(imagePath + "hero-right.png"));
-            resources.Add(ImgType.Skeleton, new Bitmap(imagePath + "skeleton.png"));
-            resources.Add(ImgType.Boss,     new Bitmap(imagePath + "boss.png"));
-            resources.Add(ImgType.FirstAid, new Bitmap(imagePath + "firstaid.png"));
-            resources.Add(ImgType.Armour,   new Bitmap(imagePath + "armour.png"));
-            resources.Add(ImgType.Weapon, new Bitmap(imagePath + "weapon.png"));
+            resources.Add(ImgType.Floor,        new Bitmap(imagePath + "floor.png"));
+            resources.Add(ImgType.Wall,         new Bitmap(imagePath + "wall.png"));
+            resources.Add(ImgType.HeroDown,     new Bitmap(imagePath + "hero-down.png"));
+            resources.Add(ImgType.HeroUp,       new Bitmap(imagePath + "hero-up.png"));
+            resources.Add(ImgType.HeroLeft,     new Bitmap(imagePath + "hero-left.png"));
+            resources.Add(ImgType.HeroRight,    new Bitmap(imagePath + "hero-right.png"));
+            resources.Add(ImgType.SkeletonDown, new Bitmap(imagePath + "skeleton-down.png"));
+            resources.Add(ImgType.SkeletonUp,   new Bitmap(imagePath + "skeleton-up.png"));
+            resources.Add(ImgType.SkeletonLeft, new Bitmap(imagePath + "skeleton-left.png"));
+            resources.Add(ImgType.SkeletonRight,new Bitmap(imagePath + "skeleton-right.png"));
+            resources.Add(ImgType.BossDown,     new Bitmap(imagePath + "boss-down.png"));
+            resources.Add(ImgType.BossUp,       new Bitmap(imagePath + "boss-up.png"));
+            resources.Add(ImgType.BossLeft,     new Bitmap(imagePath + "boss-left.png"));
+            resources.Add(ImgType.BossRight,    new Bitmap(imagePath + "boss-right.png"));
+            resources.Add(ImgType.FirstAid,     new Bitmap(imagePath + "firstaid.png"));
+            resources.Add(ImgType.Armour,       new Bitmap(imagePath + "armour.png"));
+            resources.Add(ImgType.Weapon,       new Bitmap(imagePath + "weapon.png"));
+            resources.Add(ImgType.Potion,       new Bitmap(imagePath + "potion.png"));
         }
 
-        // The method is used to display player's status
-        private void TextBlockDisplay()
+        public void AddTextBlocks(string name, string text, int fontSize, int top, int left)
         {
-            tb = new TextBlock();
-            tb.FontSize = 20;
-            Canvas.Children.Add(tb);
-            Canvas.SetTop(tb, 610);
-            Canvas.SetLeft(tb, 10);
+            TextBlocks.Add(name, new TextBlock());
+            TextBlocks[name].FontSize = fontSize;
+            TextBlocks[name].Foreground = new SolidColorBrush(new Color(255, 200, 200, 200));
+            TextBlocks[name].Text = text;
+            Canvas.Children.Add(TextBlocks[name]);
+            Canvas.SetTop(TextBlocks[name], top);
+            Canvas.SetLeft(TextBlocks[name], left);
         }
 
         public void DrawImage(string imageName, ImgType type, Position pos) 
@@ -94,7 +104,7 @@ namespace Wanderer
             var image = new Image();
             if (imageName != null)
             {
-                Images.Add(imageName, image);
+                  Images.Add(imageName, image);
             }
             image.Source = resources[type];
             Canvas.SetLeft(image, left + pos.X * PicSize);
@@ -142,9 +152,12 @@ namespace Wanderer
             }
         }
 
-        public void UpdateStatusText(string input)
+        public void UpdateStatusText(string[] tb)
         {
-            tb.Text = input;
+            for (int i = 0; i < tb.Length; i++)
+            {
+                TextBlocks[i.ToString()].Text = tb[i];
+            }
         }
 
         public void GameOver()
@@ -155,6 +168,16 @@ namespace Wanderer
         public void Loading()
         {
             DrawCenterText("LOADING...");
+        }
+
+        public void Pause(bool paused)
+        {
+            if (paused)
+            {
+                PausedTextBlock = CenterText("pause", SetColor(255, 0, 0), Darken(156));
+                Canvas.Children.Add(PausedTextBlock);
+            }
+            else Canvas.Children.Remove(PausedTextBlock);
         }
 
         public void RedScreen()
@@ -168,6 +191,41 @@ namespace Wanderer
             Canvas.SetLeft(rectangle, 0);
             Canvas.SetTop(rectangle, 0);
             if (opacity < 5) return;
+        }
+        
+        public void SideBar()
+        {
+            Rectangle sideBar = new Rectangle()
+            {
+                Width = 200,
+                Height = 600,
+            };
+            // Grey sidebar background
+            sideBar.Fill = new SolidColorBrush(new Color(255, 50, 50, 50));
+            Canvas.SetLeft(sideBar, 600);
+            Canvas.SetTop(sideBar, 0);
+            Canvas.Children.Add(sideBar);
+            if (!SidebarImagesLoaded)
+            {
+                ImgType[] sidebarTiles = new ImgType[] {ImgType.FirstAid, ImgType.Armour, ImgType.Weapon};
+                for (int i = 0; i < sidebarTiles.Length; i++)
+                {
+                    LoadSidebarImages(sidebarTiles[i]);
+                    Canvas.SetLeft(sidebarImages[sidebarTiles[i].ToString()], 610);
+                    Canvas.SetTop(sidebarImages[sidebarTiles[i].ToString()], 50 + i * 50);
+                }
+                SidebarImagesLoaded = true;
+            }
+        }
+
+        public void LoadSidebarImages(ImgType name)
+        {
+            Image image = new Image();
+            image.Source = resources[name];
+            image.Width = 45;
+            image.Height = 45;
+            sidebarImages.Add(name.ToString(), image);
+            Canvas.Children.Add(image);
         }
         private void Timer_RedColor(object sender, EventArgs e)
         {
@@ -194,7 +252,6 @@ namespace Wanderer
                 string str = m.Message;
             }
         }
-
 
         // The following methods are used to display text through all the screen
         private void DrawCenterText(string str)
@@ -228,6 +285,13 @@ namespace Wanderer
             return new SolidColorBrush(new Color(a, 0, 0, 0));
         }
 
-        
+        public void PrepareDrawer()
+        {
+            AvaloniaRedDownLock = false;
+            SidebarImagesLoaded = false;
+            sidebarImages.Clear();
+            TextBlocks.Clear();
+            SideBar();
+        }
     }
 }

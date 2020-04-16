@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Avalonia.Media;
+using System;
 using System.Collections.Generic;
 using Wanderer.characters;
 
@@ -13,7 +14,9 @@ namespace Wanderer
         public List<Loot> Loots = new List<Loot>();
         private Map map;
         private Drawer drawer;
-        private bool levelPreparation = false;
+        private bool levelPreparation;
+        private bool enemyInfoDisplayed;
+        private bool bossGenerated;
 
         public GameControl(Map map, Drawer drawer)
         {
@@ -21,8 +24,9 @@ namespace Wanderer
             this.map = map;
             this.drawer = drawer;
             GeneratePlayer();
-            GenerateBoss();
             GenerateSkeletons(3);
+            this.drawer.SideBar();
+            StatusTextDisplay(GetPlayerInfo());
         }
 
         private void GeneratePlayer()
@@ -62,12 +66,7 @@ namespace Wanderer
 
                 // Add Skeleton to the list of Skeletons
                 Skeletons.Add(new Skeleton(pos, map, drawer, this, "Skeleton" + i.ToString()));
-                // Set Skeleton initial direction
-                //while (!Skeletons[i].CheckDirection())
-                //{
-                //    if (!Skeletons[i].GenerateDirection()) break;
-                //}
-                drawer.DrawImage("Skeleton" + i.ToString(), Drawer.ImgType.Skeleton, pos);
+                drawer.DrawImage("Skeleton" + i.ToString(), Drawer.ImgType.SkeletonDown, pos);
                 (Skeletons[i]).NavigateEnemyToPlayer(Player, map);
             }
         }
@@ -81,12 +80,11 @@ namespace Wanderer
                 pos = map.RandomFreeCell();
             } while (CheckCollissions(pos));
             Boss = new Boss(pos, map, drawer, this, "Boss");
-            drawer.DrawImage(Boss, Drawer.ImgType.Boss);
+            drawer.DrawImage(Boss, Drawer.ImgType.BossDown);
         }
 
         public void PlayerMove()
         {
-            if (Player == null) return;
             Player.Move(Player.Dir);
         }
 
@@ -105,15 +103,40 @@ namespace Wanderer
         // If a player is close to the boss, he attacks player
         public void BossAttacks()
         {
-            if (StandingNext((Character)Boss))
+            if (Boss is null) return;
+                if (StandingNext((Character)Boss))
             {
                 Fight(Boss, Player);
             }
             
             if (Skeletons.Count < 1)
             {
-                Boss.NavigateEnemyToPlayer(Player, map);
+                 Boss.NavigateEnemyToPlayer(Player, map);
                 ((Boss)Boss).MoveBoss();
+            }
+        }
+
+        public void GetSkeletonInfo()
+        {
+            return;
+            Character enemy = GetCharacter();
+            if (FacingTowardsEnemy(enemy) && !enemyInfoDisplayed)
+            {
+                string[] tb = {$"{enemy.CurrentHP} / {enemy.MaxHP}", $"{enemy.SP}", $"{enemy.DP}" };
+                drawer.AddTextBlocks("Enemy0", "Enemy", 25, 350, 620);
+                for (int i = 1; i < tb.Length; i++)
+                {
+                    drawer.AddTextBlocks("Enemy" + i.ToString(), tb[i], 20, 400 + i * 50, 670);
+                }
+                enemyInfoDisplayed = true;
+            }
+            if (enemyInfoDisplayed && enemy == null)
+            {
+                enemyInfoDisplayed = false;
+                for (int i = 0; i < 2; i++)
+                {
+                    drawer.TextBlocks.Remove("Enemy" + i); 
+                }
             }
         }
 
@@ -121,24 +144,18 @@ namespace Wanderer
         // Update status about the player
         public void ShowStatus()
         {
-            drawer.UpdateStatusText(StatusText());
+            drawer.UpdateStatusText(GetPlayerInfo());
         }
         
-        private string StatusText()
-        {
-            return $"Level: {Level}\nHealth Points: {Player.CurrentHP} / {Player.MaxHP}";
-        }
-
-
         // Check free place in the map, not to create two Skeletons on the same tile
         private bool CheckCollissions(Position position)
         {
             for (int i = 0; i < Skeletons.Count; i++)
             {
-                if (Skeletons[i].Position == position) return true;
+                if (Skeletons[i].Position.X == position.X && Skeletons[i].Position.Y == position.Y) return true;
             }
-            if (Player.Position == position) return true;
-            if (Boss != null && (Boss.Position == position)) return true;
+            if (Player.Position.X == position.X && Player.Position.Y == position.Y) return true;
+            if (Boss != null && (Boss.Position.X == position.X && Boss.Position.Y == position.Y)) return true;
             return false;
         }
         
@@ -176,7 +193,6 @@ namespace Wanderer
         // Check if someone is standing next to the player
         private bool StandingNext(Character ch)
         {
-            if (Player == null) return false;
             if (((Player.Position.X == ch.Position.X - 1) || (Player.Position.X == ch.Position.X + 1)) && (Player.Position.Y == ch.Position.Y)) return true;
             else if (((Player.Position.Y == ch.Position.Y - 1) || (Player.Position.Y == ch.Position.Y + 1)) && (Player.Position.X == ch.Position.X)) return true;
             else return false;
@@ -196,6 +212,7 @@ namespace Wanderer
         // Check if player is facing towards the enemy
         private bool FacingTowardsEnemy(Character ch)
         {
+            if (ch == null) return false;
             if ((Player.Dir == Character.Direction.East)  && (ch.Position.X == Player.Position.X + 1)) return true;
             if ((Player.Dir == Character.Direction.West)  && (ch.Position.X == Player.Position.X - 1)) return true;
             if ((Player.Dir == Character.Direction.North) && (ch.Position.Y == Player.Position.Y - 1)) return true;
@@ -218,23 +235,15 @@ namespace Wanderer
                 defender.CurrentHP -= SV - defender.DP;
                 if (attacker is Skeleton || attacker is Boss) drawer.RedScreen();
             }
+            drawer.UpdateStatusText(GetPlayerInfo());
 
-            if (defender.CurrentHP < 1 && defender is Player)
+            if (defender.CurrentHP < 1)
             {
                 defender.CurrentHP = 0;
-                drawer.UpdateStatusText(StatusText());
-                Player.RemoveImage();
-            }
-            if (defender.CurrentHP < 1 && defender is Skeleton)
-            {
+                if (!(defender is Player)) RenderReward(defender);
                 defender.RemoveImage();
-                RenderReward(defender);
-                Skeletons.Remove((Skeleton)defender);
-            }
-            if (defender.CurrentHP < 1 && defender is Boss)
-            {
-                defender.RemoveImage();
-                Boss = null;
+                if (defender is Skeleton) Skeletons.Remove((Skeleton)defender);
+                if (defender is Boss) Boss = null;
             }
         }
 
@@ -242,20 +251,28 @@ namespace Wanderer
         {
             Random random = new Random();
             int rnd = random.Next(100);
-            if(rnd < 50)
+            if (defender is Skeleton)
             {
-                Loots.Add(new Loot(defender.Position, "firstAid" + defender.Id.Substring(defender.Id.Length - 1)));
-                drawer.DrawImage("firstAid" + defender.Id.Substring(defender.Id.Length - 1), Drawer.ImgType.FirstAid, defender.Position);
+                if(rnd >= 50)
+                {
+                    Loots.Add(new Loot(defender.Position, "firstAid" + defender.Id.Substring(defender.Id.Length - 1)));
+                    drawer.DrawImage("firstAid" + defender.Id.Substring(defender.Id.Length - 1), Drawer.ImgType.FirstAid, defender.Position);
+                }
+                if(rnd >= 0 && rnd < 25)
+                {
+                    Loots.Add(new Loot(defender.Position, "armour" + defender.Id.Substring(defender.Id.Length - 1)));
+                    drawer.DrawImage("armour" + defender.Id.Substring(defender.Id.Length - 1), Drawer.ImgType.Armour, defender.Position);
+                }
+                if (rnd >= 25 && rnd < 50)
+                {
+                    Loots.Add(new Loot(defender.Position, "weapon" + defender.Id.Substring(defender.Id.Length - 1)));
+                    drawer.DrawImage("weapon" + defender.Id.Substring(defender.Id.Length - 1), Drawer.ImgType.Weapon, defender.Position);
+                }
             }
-            if(rnd >= 50 && rnd < 80)
+            if(defender is Boss)
             {
-                Loots.Add(new Loot(defender.Position, "armour" + defender.Id.Substring(defender.Id.Length - 1)));
-                drawer.DrawImage("armour" + defender.Id.Substring(defender.Id.Length - 1), Drawer.ImgType.Armour, defender.Position);
-            }
-            if (rnd >= 80 && rnd < 100)
-            {
-                Loots.Add(new Loot(defender.Position, "weapon" + defender.Id.Substring(defender.Id.Length - 1)));
-                drawer.DrawImage("weapon" + defender.Id.Substring(defender.Id.Length - 1), Drawer.ImgType.Armour, defender.Position);
+                Loots.Add(new Loot(defender.Position, "potion" + defender.Id.Substring(defender.Id.Length - 1)));
+                drawer.DrawImage("potion" + defender.Id.Substring(defender.Id.Length - 1), Drawer.ImgType.Potion, defender.Position);
             }
         }
 
@@ -267,7 +284,7 @@ namespace Wanderer
                 if (Player.Position.X == Loots[i].Position.X && Player.Position.Y == Loots[i].Position.Y)
                 {
                     drawer.RemoveImage(Loots[i]);
-                    if(Loots[i].Id.Contains("firstAid"))
+                    if (Loots[i].Id.Contains("firstAid"))
                     {
                         int rnd = random.Next(1, 101);
                         if (rnd <= 10) Player.CurrentHP = Player.MaxHP;
@@ -276,17 +293,28 @@ namespace Wanderer
                     }
                     if (Loots[i].Id.Contains("armour"))
                     {
-                        int rnd = random.Next(1, 101);      // TODO IMPROVE ACCORDING TO THE PROBABILITIES
-                        Player.DP += (rnd * Player.DP) / 500;
+                        int rnd = random.Next(1, 101);
+                        if (rnd <= 10) Player.DP += Level * 2 * random.Next(1, 7); 
+                        if (rnd > 0 && rnd <= 50) Player.DP += Level * random.Next(1, 7);
                     }
                     if (Loots[i].Id.Contains("weapon"))
                     {
                         int rnd = random.Next(1, 101);
-                        Player.SP += (rnd * Player.SP) / 500;
+                        if (rnd <= 10) Player.SP += Level * 2 * random.Next(1, 7); ;
+                        if (rnd > 0 && rnd <= 50) Player.SP += Level * random.Next(1, 7);
+                    }
+                    if (Loots[i].Id.Contains("potion"))
+                    {
+                        int rnd = random.Next(1, 101);
+                        if (rnd <= 10) Player.MaxHP += 3 * random.Next(1, 7);
+                        if (rnd > 10 && rnd <= 40) Player.MaxHP += 2 * random.Next(1, 7);
+                        if (rnd > 50) Player.MaxHP += random.Next(1, 7);
+                        Player.CurrentHP = Player.MaxHP;
                     }
                     Loots.RemoveAt(i);
                 }
             }
+            drawer.UpdateStatusText(GetPlayerInfo());
         }
 
         // Checks if conditions for the next level were met and sets a new level
@@ -297,33 +325,57 @@ namespace Wanderer
                 CreateNewLevel();
                 return;
             }
-            if (Skeletons.Count < 1 && Boss == null)
+            if (Skeletons.Count < 1 && bossGenerated && Boss == null && Loots.Count < 1)
             {
                 drawer.Loading();
                 levelPreparation = true;
                 return;
             }
-            if (Player.CurrentHP <= 0)
+            if (Skeletons.Count < 1 && !bossGenerated)
             {
+                GenerateBoss();
+                bossGenerated = true;
+            }
+            if (Player != null && Player.CurrentHP <= 0)
+            {
+                drawer.UpdateStatusText(GetPlayerInfo());
                 Player = null;
                 MainWindow.Timer.Stop();
                 drawer.GameOver();
             }
-            // TODO: Pause
+        }
+        
+        public string[] GetPlayerInfo()
+        {
+            string[] info = new string[] { $"Floor {Level}", $"{Player.CurrentHP} / {Player.MaxHP}", $"{Player.SP}", $"{Player.DP}"};
+            return info;
+        }
+
+        // The method is used to display player's status
+        public void StatusTextDisplay(string[] tb)
+        {
+            drawer.AddTextBlocks("0", tb[0], 25, 10, 620);
+            for (int i = 1; i < tb.Length; i++)
+            {
+                drawer.AddTextBlocks(i.ToString(), tb[i], 20, 8 + i * 50, 670);
+            }
         }
 
         private void CreateNewLevel()
         {
             Level++;
+            Boss = null;
+            bossGenerated = false;
             MainWindow.GameSpeed *= 0.9; //Makes movemment of skeletons faster
             levelPreparation = false;
             Skeletons.Clear();
             drawer.Images.Clear();
+            drawer.Canvas.Children.Clear();
             map.CreateMap(58);
             GenerateSkeletons(2 + Level);
-            GenerateBoss();
             PlacePlayer();
-            drawer.AvaloniaRedDownLock = false;
+            drawer.PrepareDrawer();
+            StatusTextDisplay(GetPlayerInfo());
         }
     }
 }

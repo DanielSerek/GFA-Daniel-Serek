@@ -17,7 +17,11 @@ namespace Wanderer.characters
         public override void Move(Direction dir)
         {
             base.Move(dir);
-            Drawer.ImgType img_type = Drawer.ImgType.Skeleton;
+            Drawer.ImgType img_type = Drawer.ImgType.SkeletonDown;
+            if (dir == Direction.East)  img_type = Drawer.ImgType.SkeletonRight;
+            if (dir == Direction.North) img_type = Drawer.ImgType.SkeletonUp;
+            if (dir == Direction.South) img_type = Drawer.ImgType.SkeletonDown;
+            if (dir == Direction.West)  img_type = Drawer.ImgType.SkeletonLeft;
             drawer.MoveImage(this, img_type);
         }
 
